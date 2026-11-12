@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#cfe9ff">
-<meta name="minik-ressam" content="MINIK_RESSAM_APP v4">
+<meta name="minik-ressam" content="MINIK_RESSAM_APP v5">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Minik Ressam Rümeysa</title>
@@ -85,6 +85,7 @@ button{font:inherit;color:inherit}
 .badge{position:absolute;top:2px;right:2px;display:flex;align-items:center;gap:2px;background:var(--sun);border:3px solid var(--ink);border-radius:99px;padding:3px 9px 3px 5px;font:900 14px var(--body);transform:rotate(8deg)}
 .badge svg{width:18px;height:18px;fill:var(--paper)}
 .hint{margin:30px 0 0;font:700 16px/1.5 var(--body);color:var(--muted);text-align:center}
+.ver{appearance:none;display:inline-block;margin:6px 0 0;border:2px solid var(--muted);border-radius:99px;background:transparent;color:var(--muted);font:800 14px var(--body);padding:6px 12px;cursor:pointer}
 
 /* ---------- oynatıcı ---------- */
 #play.on{display:grid}
@@ -1297,7 +1298,7 @@ const PencilEngine = (() => {
 const $ = s => document.querySelector(s);
 const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const IN_VIEWER = !!(window.claude && typeof window.claude.use === 'function');
-const APP_VERSION = 4;
+const APP_VERSION = 5;
 const DPR = () => Math.min(2, window.devicePixelRatio || 1);
 try { document.documentElement.style.setProperty('--paperTex', `url(${PencilEngine.paperDataURL()})`); } catch (e) {}
 
@@ -1478,7 +1479,22 @@ const stepText = () => isFinal() ? FINAL_TEXT : st.dr.steps[st.step].t;
 
 $('#homeBtn').innerHTML = icon('home', 28);
 $('#fullBtn').innerHTML = icon('full', 26);
-if (APP) { $('#fullBtn').hidden = true; $('.hint').textContent = 'Büyüklere not: Çizim ekranında sağ üstteki ayar düğmesinden çizim hızını, sesli anlatımı ve kendiliğinden devam etmeyi ayarlayabilirsiniz. Sürüm ' + APP_VERSION + '.'; }
+if (APP) {
+  $('#fullBtn').hidden = true;
+  $('.hint').innerHTML = 'Büyüklere not: Çizim ekranında sağ üstteki ayar düğmesinden çizim hızını, sesli anlatımı ve kendiliğinden devam etmeyi ayarlayabilirsiniz. <button type="button" class="ver" id="verBtn">Sürüm ' + APP_VERSION + ' · güncellemeyi kontrol et</button>';
+  $('#verBtn').addEventListener('click', () => {
+    sfx.tap();
+    if (typeof APP.checkNow !== 'function') { toast('Güncelleme için uygulamayı kapatıp yeniden aç'); return; }
+    try { APP.checkNow(); } catch (e) {}
+    toast('Yeni sürüm aranıyor…');
+    let n = 0;
+    const iv = setInterval(() => {
+      n++;
+      if (maybeApplyUpdate()) { clearInterval(iv); return; }
+      if (n >= 12) { clearInterval(iv); toast('Şu an en yeni sürüm sende'); }
+    }, 1000);
+  });
+}
 $('#setBtn').innerHTML = icon('gear', 28);
 $('#replayBtn').innerHTML = icon('replay', 22) + 'Tekrar izle';
 $('#prevBtn').innerHTML = icon('left', 22) + 'Önceki';
