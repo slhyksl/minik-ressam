@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#cfe9ff">
+<meta name="minik-ressam" content="MINIK_RESSAM_APP v3">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Minik Ressam</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffc93c'/%3E%3Cpath d='M14 50l3-12 24-24 9 9-24 24z' fill='%23ff6b57' stroke='%232d3047' stroke-width='4' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  /* düzen fikri: tablet bir çizim öğretmeni — büyük bantlı kâğıtta kalem çizer, yanda adım kartı, altta adım şeridi */
+  --sky:#cfe9ff;
+  --paper:#ffffff;
+  --ink:#2d3047;
+  --muted:#565f86;
+  --coral:#ff6b57;
+  --sun:#ffc93c;
+  --mint:#63e6be;
+  --display:'Grandstander','Baloo 2','Comic Sans MS','Chalkboard SE',system-ui,sans-serif;
+  --body:'Nunito','Segoe UI',Roboto,system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{
+  background:var(--sky) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' opacity='.6'%3E%3Cpath d='M22 34l7 7 7-7'/%3E%3Ccircle cx='38' cy='128' r='8'/%3E%3Cpath d='M112 42q8-10 16 0t16 0'/%3E%3Cpath d='M128 118l4 9 10 1-7 7 2 10-9-5-9 5 2-10-7-7 10-1z'/%3E%3C/svg%3E");
+  color:var(--ink);font-family:var(--body);
+  -webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+  overscroll-behavior:none;touch-action:manipulation;overflow:hidden;
+}
+button{font:inherit;color:inherit}
+.screen{position:fixed;inset:0;display:none}
+.screen.on{display:block}
+
+/* ---------- düğmeler ---------- */
+.btn{
+  appearance:none;-webkit-appearance:none;font:800 19px/1.1 var(--display);color:var(--ink);background:var(--paper);
+  border:3px solid var(--ink);border-radius:18px;box-shadow:0 5px 0 var(--ink);padding:12px 18px;min-height:56px;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;position:relative;overflow:hidden;
+  transition:transform .1s,box-shadow .1s,background-color .2s;touch-action:manipulation;
+}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.btn:focus-visible,.card:focus-visible,.chip:focus-visible,.tl:focus-visible,.seg button:focus-visible{outline:4px solid #4263eb;outline-offset:3px}
+.btn[disabled]{opacity:.38;pointer-events:none}
+.btn.go{background:var(--mint)}
+.btn.sun{background:var(--sun)}
+.btn.coral{background:var(--coral);color:#fff}
+.btn.icon{width:58px;height:58px;padding:0;border-radius:50%;flex:0 0 auto}
+.btn.small{min-height:48px;padding:8px 14px;font-size:17px;border-radius:15px;box-shadow:0 4px 0 var(--ink)}
+.btn.small:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+
+/* ---------- ana sayfa ---------- */
+#home{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:max(20px,env(safe-area-inset-top)) clamp(16px,3.5vw,44px) 48px}
+.wrap{max-width:1180px;margin:0 auto}
+.hero{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 28px;padding-top:6px}
+.logo{margin:0;font:800 clamp(46px,7.4vw,92px)/1 var(--display);letter-spacing:.01em;display:flex;flex-wrap:wrap}
+.logo span{display:inline-block;color:var(--c);-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:0 6px 0 var(--ink);transform:rotate(var(--r));animation:pop .7s cubic-bezier(.3,1.6,.5,1) both;animation-delay:var(--d)}
+.logo .gap{width:.32em}
+@keyframes pop{0%{transform:translateY(-14px) rotate(var(--r))}100%{transform:translateY(0) rotate(var(--r))}}
+.tag{margin:12px 0 0;font:800 clamp(17px,2vw,22px)/1.35 var(--body);color:var(--muted);max-width:34ch;text-wrap:balance}
+.how{display:flex;gap:10px;flex-wrap:wrap;margin:0;padding:0;list-style:none}
+.how li{display:flex;align-items:center;gap:10px;background:var(--paper);border:3px solid var(--ink);border-radius:18px;padding:10px 14px 10px 10px;box-shadow:0 4px 0 var(--ink);font:800 16px/1.15 var(--body);max-width:190px}
+.how b{flex:0 0 auto;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:800 18px var(--display);border:3px solid var(--ink);background:var(--c)}
+.chips{display:flex;gap:10px;flex-wrap:wrap;margin:26px 0 18px}
+.chip{appearance:none;border:3px solid var(--ink);background:var(--paper);border-radius:99px;padding:10px 18px;min-height:50px;font:800 18px var(--display);cursor:pointer;box-shadow:0 4px 0 var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(186px,1fr));gap:20px 18px}
+.card{appearance:none;border:3px solid var(--ink);border-radius:26px;background:var(--paper);padding:10px 10px 12px;box-shadow:0 6px 0 var(--ink);display:flex;flex-direction:column;gap:10px;cursor:pointer;text-align:left;position:relative;transition:transform .12s,box-shadow .12s}
+.card:active{transform:translateY(4px);box-shadow:0 2px 0 var(--ink)}
+.thumb{display:block;aspect-ratio:1;border-radius:18px;background:var(--bg);padding:8%}
+.cap{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 4px}
+.nm{font:800 22px/1.1 var(--display)}
+.pill{font:900 13px/1 var(--body);padding:5px 9px;border-radius:99px;border:2px solid var(--ink);white-space:nowrap}
+.lvl-1{background:#c3fae8}.lvl-2{background:#fff3bf}.lvl-3{background:#ffd8cc}
+.badge{position:absolute;top:2px;right:2px;display:flex;align-items:center;gap:2px;background:var(--sun);border:3px solid var(--ink);border-radius:99px;padding:3px 9px 3px 5px;font:900 14px var(--body);transform:rotate(8deg)}
+.badge svg{width:18px;height:18px;fill:var(--paper)}
+.hint{margin:30px 0 0;font:700 16px/1.5 var(--body);color:var(--muted);text-align:center}
+
+/* ---------- oynatıcı ---------- */
+#play.on{display:grid}
+#play{
+  height:100%;gap:14px;padding:max(12px,env(safe-area-inset-top)) 14px 12px;
+  grid-template-columns:minmax(0,1fr) minmax(300px,32%);grid-template-rows:auto minmax(0,1fr) auto;
+  grid-template-areas:"top top" "stage side" "time time";
+}
+.topbar{grid-area:top;display:flex;align-items:center;gap:12px;min-width:0}
+.tname{font:800 clamp(24px,3vw,34px)/1 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+
+.stagewrap{grid-area:stage;display:grid;place-items:center;min-width:0;min-height:0}
+.stage{position:relative;background:#fbf9f3 var(--paperTex,none) 0 0/256px 256px;border-radius:16px;box-shadow:0 0 0 3px var(--ink),0 9px 0 3px var(--ink);width:300px;height:300px;cursor:pointer}
+.stage::before,.stage::after{content:"";position:absolute;top:-15px;width:96px;height:30px;background:rgba(255,201,60,.8);border:2px solid rgba(45,48,71,.18);pointer-events:none;z-index:3}
+.stage::before{left:-24px;transform:rotate(-8deg)}
+.stage::after{right:-24px;transform:rotate(7deg)}
+.clip{position:absolute;inset:0;overflow:hidden;border-radius:16px}
+#disp{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hand{position:absolute;left:0;top:0;width:0;height:0;will-change:transform;pointer-events:none;z-index:2}
+.hin,.hsh{position:absolute;transition:transform .18s ease-out,opacity .18s ease-out;transform-origin:10% 55%}
+.hin svg,.hsh svg{display:block;width:100%;height:100%}
+.hsh{transform:translate(5px,7px);opacity:.95}
+.hand.up .hin{transform:translate(4px,-10px) scale(1.04)}
+.hand.up .hsh{transform:translate(16px,20px) scale(1.02);opacity:.55}
+.sheetimg{display:block;width:100%;height:100%;background:#fbf9f3 var(--paperTex,none) 0 0/256px 256px;border-radius:8px;box-shadow:0 3px 0 rgba(45,48,71,.22);transform:rotate(var(--rot,0deg));padding:3%}
+.sheetimg img,.sheetimg svg{display:block;width:100%;height:100%}
+.pp{position:absolute;left:14px;bottom:14px;z-index:4}
+.intro{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:6%;text-align:center;background:rgba(255,255,255,.86);border-radius:16px}
+.intro .pic{width:44%;aspect-ratio:1;border-radius:22px;border:3px solid var(--ink);padding:5%;background:var(--bg)}
+.intro h2{margin:0;font:800 clamp(28px,4vw,46px)/1.05 var(--display);text-wrap:balance}
+.intro p{margin:0;font:800 clamp(17px,2vw,22px)/1.35 var(--body);color:var(--muted);text-wrap:balance}
+.intro .btn{min-height:76px;font-size:28px;padding:14px 34px;border-radius:24px}
+
+.side{grid-area:side;display:flex;flex-direction:column;gap:14px;min-height:0}
+.scard{flex:1;min-height:0;overflow:auto;background:var(--paper);border:3px solid var(--ink);border-radius:26px;box-shadow:0 6px 0 var(--ink);padding:18px;display:flex;flex-direction:column;gap:14px}
+.steplbl{font:900 15px var(--body);color:var(--coral);text-transform:uppercase;letter-spacing:.07em}
+.instr{margin:0;font:800 clamp(21px,2.3vw,29px)/1.3 var(--body);text-wrap:balance}
+.status{margin-top:auto;display:flex;align-items:center;gap:12px;font:800 clamp(18px,1.9vw,22px)/1.2 var(--display);padding:12px 14px;border-radius:18px;background:#e7f5ff;border:3px solid var(--ink)}
+.status svg{flex:0 0 auto}
+.status.turn{background:#fff3bf}
+.status.turn svg{animation:wig 1s ease-in-out infinite;transform-origin:30% 80%}
+@keyframes wig{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(12deg) translateY(-2px)}}
+.ctrls{display:flex;flex-direction:column;gap:12px}
+#mainBtn{min-height:84px;font-size:clamp(22px,2.4vw,28px);border-radius:24px}
+#mainBtn.ready{animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 5px 0 var(--ink),0 0 0 0 rgba(99,230,190,.7)}50%{box-shadow:0 5px 0 var(--ink),0 0 0 12px rgba(99,230,190,0)}}
+#mainBtn .bar{position:absolute;left:0;bottom:0;height:7px;width:0;background:var(--ink);opacity:.35}
+.row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.row .btn{padding:8px 6px;font-size:16px;flex-direction:column;gap:2px;min-height:64px}
+
+.timeline{grid-area:time;display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;padding:4px 4px 10px;justify-content:safe center}
+.tl{appearance:none;flex:0 0 auto;width:78px;height:78px;border:3px solid var(--ink);border-radius:18px;background:#fbf9f3 var(--paperTex,none) 0 0/256px 256px;position:relative;padding:5px;cursor:pointer;box-shadow:0 4px 0 var(--ink);transition:transform .15s}
+.tl img,.tl svg{width:100%;height:100%;display:block}
+.tl i{position:absolute;top:-9px;left:-9px;width:28px;height:28px;border-radius:50%;border:3px solid var(--ink);background:var(--paper);font:900 13px/22px var(--body);font-style:normal;text-align:center}
+.tl.done i{background:var(--mint)}
+.tl.cur{transform:translateY(-4px);box-shadow:0 0 0 4px var(--coral),0 8px 0 var(--ink)}
+.tl.cur i{background:var(--coral);color:#fff}
+
+/* ---------- pencere, ayarlar, bildirim, konfeti ---------- */
+#modal{position:fixed;inset:0;z-index:60;display:none;place-items:center;background:rgba(45,48,71,.5);padding:16px}
+#modal.on{display:grid}
+.sheet{background:var(--paper);border:3px solid var(--ink);border-radius:30px;box-shadow:0 8px 0 var(--ink);padding:24px;max-width:560px;width:100%;max-height:100%;overflow:auto;text-align:center;display:flex;flex-direction:column;gap:14px;align-items:center;animation:rise .35s cubic-bezier(.3,1.4,.5,1)}
+@keyframes rise{from{transform:translateY(30px) scale(.94)}to{transform:none}}
+.sheet h2{margin:0;font:800 clamp(28px,4vw,38px)/1.1 var(--display);text-wrap:balance}
+.sheet p{margin:0;font:700 18px/1.45 var(--body);color:var(--muted);text-wrap:balance}
+.sheet .prev{width:min(260px,56vw);aspect-ratio:1;border:3px solid var(--ink);border-radius:20px;padding:6%}
+.sheet .stars{display:flex;gap:6px}
+.sheet .stars svg{width:46px;height:46px;fill:var(--sun);stroke:var(--ink);stroke-width:1.6}
+.sheet .acts{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.set{width:100%;display:flex;flex-direction:column;gap:16px;text-align:left}
+.set label{display:block;font:800 17px var(--body);margin-bottom:8px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{appearance:none;flex:1;min-width:84px;min-height:50px;border:3px solid var(--ink);border-radius:14px;background:var(--paper);font:800 17px var(--display);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--sun)}
+#toast{position:fixed;left:50%;top:max(84px,calc(env(safe-area-inset-top) + 76px));transform:translate(-50%,-30px);opacity:0;background:var(--ink);color:#fff;font:800 17px var(--body);padding:12px 20px;border-radius:99px;z-index:70;transition:transform .25s,opacity .25s;pointer-events:none;max-width:90vw;text-align:center}
+#toast.on{transform:translate(-50%,0);opacity:1}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:55;width:100%;height:100%}
+.pencil{pointer-events:none}
+
+/* ---------- dikey tablet ---------- */
+@media (orientation:portrait){
+  #play{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto auto;grid-template-areas:"top" "stage" "side" "time"}
+  .side{flex-direction:row;align-items:stretch}
+  .scard{flex:1;min-width:0;padding:16px;gap:10px}
+  .instr{font-size:clamp(20px,3vw,26px)}
+  .ctrls{width:clamp(220px,34vw,290px);justify-content:space-between}
+  #mainBtn{flex:1}
+}
+@media (max-width:640px) and (orientation:portrait){
+  .side{flex-direction:column}
+  .ctrls{width:auto}
+  .tl{width:62px;height:62px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<section id="home" class="screen on" aria-label="Ana sayfa">
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <h1 class="logo" id="logo" aria-label="Minik Ressam"></h1>
+        <p class="tag">Tablette kalemi tutan eli izle, sen de kendi kâğıdına adım adım aynısını çiz!</p>
+      </div>
+      <ol class="how" aria-label="Nasıl oynanır">
+        <li><b style="--c:#ffc93c">1</b>Kâğıt ve kalemini hazırla</li>
+        <li><b style="--c:#63e6be">2</b>Tablette kalemi izle</li>
+        <li><b style="--c:#ff8fab">3</b>Sen de kâğıdına çiz</li>
+      </ol>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Kategoriler"></div>
+    <div class="grid" id="grid"></div>
+    <p class="hint">Büyüklere not: Tarayıcı menüsünden “Ana ekrana ekle”yi seçerseniz Minik Ressam tablette uygulama gibi açılır. Sağ üstteki dişliden çizim hızını, sesli anlatımı ve otomatik devamı ayarlayabilirsiniz.</p>
+  </div>
+</section>
+
+<section id="play" class="screen" aria-label="Çizim dersi">
+  <header class="topbar">
+    <button class="btn icon" id="homeBtn" type="button" aria-label="Ana sayfaya dön"></button>
+    <div class="tname" id="tname">Kedi</div>
+    <button class="btn icon" id="fullBtn" type="button" aria-label="Tam ekran"></button>
+    <button class="btn icon" id="setBtn" type="button" aria-label="Ayarlar"></button>
+  </header>
+
+  <div class="stagewrap" id="stagewrap">
+    <div class="stage" id="stage" role="img" aria-label="Çizim gösterimi">
+      <div class="clip"><canvas id="disp"></canvas><div class="hand up" id="hand"><div class="hsh" id="hsh"></div><div class="hin" id="hin"></div></div></div>
+      <button class="btn icon pp" id="ppBtn" type="button" aria-label="Duraklat" hidden></button>
+      <div class="intro" id="intro" hidden></div>
+    </div>
+  </div>
+
+  <aside class="side">
+    <div class="scard">
+      <div class="steplbl" id="steplbl"></div>
+      <p class="instr" id="instr" aria-live="polite"></p>
+      <div class="status" id="status"></div>
+    </div>
+    <div class="ctrls">
+      <button class="btn go" id="mainBtn" type="button"></button>
+      <div class="row">
+        <button class="btn small" id="replayBtn" type="button"></button>
+        <button class="btn small" id="speakBtn" type="button"></button>
+        <button class="btn small" id="prevBtn" type="button"></button>
+      </div>
+    </div>
+  </aside>
+
+  <nav class="timeline" id="timeline" aria-label="Adımlar"></nav>
+</section>
+
+<div id="modal" role="dialog" aria-modal="true"><div class="sheet" id="sheet"></div></div>
+<div id="toast" role="status"></div>
+<canvas id="fx"></canvas>
+
+<script>
+/* ---------- çizim yardımcıları (200x200 alan) ---------- */
+const R = n => Math.round(n * 10) / 10;
+const C = (cx, cy, r) => `M${cx} ${cy - r}a${r} ${r} 0 1 0 0 ${2 * r}a${r} ${r} 0 1 0 0 ${-2 * r}Z`;
+const E = (cx, cy, rx, ry) => `M${cx} ${cy - ry}a${rx} ${ry} 0 1 0 0 ${2 * ry}a${rx} ${ry} 0 1 0 0 ${-2 * ry}Z`;
+const RE = (cx, cy, rx, ry, deg) => {
+  const t = deg * Math.PI / 180, c = Math.cos(t), s = Math.sin(t);
+  const x1 = R(cx + ry * s), y1 = R(cy - ry * c), x2 = R(cx - ry * s), y2 = R(cy + ry * c);
+  return `M${x1} ${y1}A${rx} ${ry} ${deg} 0 0 ${x2} ${y2}A${rx} ${ry} ${deg} 0 0 ${x1} ${y1}Z`;
+};
+const tf = (p, fx, fy) => p.replace(/(-?\d*\.?\d+)\s+(-?\d*\.?\d+)/g, (m, a, b) => `${R(fx(+a))} ${R(fy(+b))}`);
+const mx = p => tf(p, x => 200 - x, y => y);
+const mv = (p, dx, dy, s = 1, flip = false) => tf(p, x => (flip ? -x : x) * s + dx, y => y * s + dy);
+const eye = (x, y, r, ry) => [
+  { d: E(x, y, r, ry || r), k: 's' },
+  { d: C(R(x + r * 0.32), R(y - (ry || r) * 0.38), R(r * 0.36)), k: 'h' }
+];
+const eyes = (x1, x2, y, r, ry) => [...eye(x1, y, r, ry), ...eye(x2, y, r, ry)];
+const blush = (x1, x2, y, z = 0.5, rx = 9, ry = 5.5) => [
+  { d: E(x1, y, rx, ry), k: 'c', f: '#ff8fab', op: 0.6, z },
+  { d: E(x2, y, rx, ry), k: 'c', f: '#ff8fab', op: 0.6, z }
+];
+const spiral = (cx, cy, r0, r1, turns, start = 0) => {
+  let s = ''; const N = Math.round(turns * 40);
+  for (let i = 0; i <= N; i++) {
+    const t = i / N, a = start + t * turns * 2 * Math.PI, r = r0 + (r1 - r0) * t;
+    s += (i ? 'L' : 'M') + R(cx + r * Math.cos(a)) + ' ' + R(cy + r * Math.sin(a));
+  }
+  return s;
+};
+const wavy = (cx, cy, r, amp, n) => {
+  let s = ''; const N = n * 14;
+  for (let i = 0; i < N; i++) {
+    const a = i / N * 2 * Math.PI, rr = r + amp * Math.cos(a * n);
+    s += (i ? 'L' : 'M') + R(cx + rr * Math.cos(a - Math.PI / 2)) + ' ' + R(cy + rr * Math.sin(a - Math.PI / 2));
+  }
+  return s + 'Z';
+};
+const rays = (cx, cy, r0, r1, n, off = 0) => {
+  let s = '';
+  for (let i = 0; i < n; i++) {
+    const a = off + i * 2 * Math.PI / n;
+    s += `M${R(cx + r0 * Math.cos(a))} ${R(cy + r0 * Math.sin(a))}L${R(cx + r1 * Math.cos(a))} ${R(cy + r1 * Math.sin(a))}`;
+  }
+  return s;
+};
+const arc = (cx, cy, r) => `M${cx - r} ${cy}A${r} ${r} 0 0 1 ${cx + r} ${cy}`;
+const band = (cx, cy, ro, ri) => `M${cx - ro} ${cy}A${ro} ${ro} 0 0 1 ${cx + ro} ${cy}L${cx + ri} ${cy}A${ri} ${ri} 0 0 0 ${cx - ri} ${cy}Z`;
+const starPts = (cx, cy, Ro, Ri) => {
+  const P = [], I = [];
+  for (let k = 0; k < 5; k++) {
+    const a = (-90 + 72 * k) * Math.PI / 180, b = (-90 + 36 + 72 * k) * Math.PI / 180;
+    P.push([R(cx + Ro * Math.cos(a)), R(cy + Ro * Math.sin(a))]);
+    I.push([R(cx + Ri * Math.cos(b)), R(cy + Ri * Math.sin(b))]);
+  }
+  return { P, I };
+};
+const pl = (...pts) => pts.map((p, i) => (i ? 'L' : 'M') + p[0] + ' ' + p[1]).join('');
+
+/* sık kullanılan renkler */
+const PINK = '#ff8fab', INK_SOFT = '#3a3f55';
+const SPRINKLES = ['#ffd43b', '#51cf66', '#339af0', '#845ef7', '#ff922b', '#ff6b6b', '#20c997', '#f06595'];
+
+/* ---------- çizimler ----------
+   şekil: d=yol, f=boyama rengi, k: o=açık çizgi, s=dolu (mürekkep), h=parıltı, c=yalnız boyamada görünen renk
+   z=katman (küçük olan arkada), sc=boyamada çizgi rengi, w=çizgi kalınlığı */
+const S = { star: starPts(100, 108, 76, 34) };
+
+const DRAWINGS = [
+  /* ===== HAYVANLAR ===== */
+  {
+    id: 'kedi', name: 'Kedi', cat: 'hayvan', bg: '#ffe8cc',
+    steps: [
+      { t: 'Büyük, yayvan bir oval çiz. Bu, kedinin kafası olacak.', s: [{ d: E(100, 114, 62, 52), f: '#ffb35c' }] },
+      {
+        t: 'Kafanın üstüne iki sivri kulak çiz.', s: [
+          { d: 'M46 98 Q38 58 50 36 Q74 44 92 66 Z', f: '#ffb35c', z: -3 },
+          { d: mx('M46 98 Q38 58 50 36 Q74 44 92 66 Z'), f: '#ffb35c', z: -3 }]
+      },
+      {
+        t: 'Kulakların içine küçük üçgenler çiz.', s: [
+          { d: 'M54 84 Q50 60 56 48 Q70 54 82 68 Z', f: PINK, z: -2 },
+          { d: mx('M54 84 Q50 60 56 48 Q70 54 82 68 Z'), f: PINK, z: -2 }]
+      },
+      { t: 'İki büyük oval göz çiz ve içlerini koyu boya. Küçük parıltıyı beyaz bırak.', s: eyes(78, 122, 108, 7.5, 9.5) },
+      {
+        t: 'Ortaya minik bir burun, altına da gülen bir ağız çiz.', s: [
+          { d: 'M93 124 Q100 119 107 124 Q101 132 100 132 Q99 132 93 124 Z', f: '#ff7b9c' },
+          { d: 'M100 132 L100 137 M86 136 Q93 145 100 137 Q107 145 114 136', k: 'o' }]
+      },
+      {
+        t: 'Yanlara bıyıklar, alnına da üç küçük çizgi ekle.', s: [
+          { d: 'M64 124 L30 117 M64 132 L28 134 M66 140 L34 150', k: 'o' },
+          { d: mx('M64 124 L30 117 M64 132 L28 134 M66 140 L34 150'), k: 'o' },
+          { d: 'M88 70 L91 82 M100 66 L100 80 M112 70 L109 82', k: 'o', sc: '#d9480f' },
+          ...blush(68, 132, 128)]
+      }
+    ]
+  },
+  {
+    id: 'ayicik', name: 'Ayıcık', cat: 'hayvan', bg: '#f3e1cf',
+    steps: [
+      { t: 'Büyük bir daire çiz. Bu, ayıcığın kafası.', s: [{ d: C(100, 112, 58), f: '#c8895a' }] },
+      { t: 'Kafanın üstüne iki yuvarlak kulak çiz.', s: [{ d: C(54, 64, 22), f: '#c8895a', z: -3 }, { d: C(146, 64, 22), f: '#c8895a', z: -3 }] },
+      { t: 'Kulakların içine küçük daireler çiz.', s: [{ d: C(54, 64, 11), f: '#f2c79b', z: -2 }, { d: C(146, 64, 11), f: '#f2c79b', z: -2 }] },
+      { t: 'Kafanın alt kısmına yayvan bir oval çiz. Burası ayıcığın ağzı olacak.', s: [{ d: E(100, 134, 30, 22), f: '#f3d5b5' }] },
+      { t: 'İki küçük yuvarlak göz çiz.', s: eyes(76, 124, 104, 7) },
+      {
+        t: 'Oval bir burun çiz, altına gülümseyen ağzı ekle.', s: [
+          { d: E(100, 125, 10, 7), k: 's' },
+          { d: 'M100 132 L100 139 M88 141 Q94 148 100 139 Q106 148 112 141', k: 'o' },
+          ...blush(64, 136, 126)]
+      }
+    ]
+  },
+  {
+    id: 'tavsan', name: 'Tavşan', cat: 'hayvan', bg: '#efe6fb',
+    steps: [
+      { t: 'Yayvan bir oval çiz. Bu, tavşanın kafası.', s: [{ d: E(100, 128, 54, 46), f: '#f4effb' }] },
+      {
+        t: 'Kafanın üstüne iki uzun kulak çiz.', s: [
+          { d: 'M80 96 Q58 44 70 18 Q90 10 96 44 Q99 70 96 92 Z', f: '#f4effb', z: -3 },
+          { d: mx('M80 96 Q58 44 70 18 Q90 10 96 44 Q99 70 96 92 Z'), f: '#f4effb', z: -3 }]
+      },
+      {
+        t: 'Kulakların içine daha ince kulaklar çiz.', s: [
+          { d: 'M82 88 Q68 50 74 30 Q86 26 89 48 Q91 68 90 86 Z', f: '#ffb3c6', z: -2 },
+          { d: mx('M82 88 Q68 50 74 30 Q86 26 89 48 Q91 68 90 86 Z'), f: '#ffb3c6', z: -2 }]
+      },
+      { t: 'İki yuvarlak göz çiz.', s: eyes(80, 120, 124, 6.5) },
+      {
+        t: 'Minik bir burun ve gülümseyen bir ağız ekle.', s: [
+          { d: 'M94 138 Q100 134 106 138 Q100 145 94 138 Z', f: PINK },
+          { d: 'M100 143 L100 148 M89 149 Q95 155 100 148 Q105 155 111 149', k: 'o' },
+          ...blush(70, 130, 140)]
+      }
+    ]
+  },
+  {
+    id: 'kopek', name: 'Köpek', cat: 'hayvan', bg: '#fbe9d0',
+    steps: [
+      { t: 'Yuvarlak bir kafa çiz.', s: [{ d: E(100, 108, 52, 50), f: '#f5c78e' }] },
+      {
+        t: 'Kafanın iki yanına aşağı sarkan uzun kulaklar çiz.', s: [
+          { d: 'M60 70 Q36 62 28 92 Q22 124 40 140 Q56 146 62 122 Q64 96 60 70 Z', f: '#8b5a3c' },
+          { d: mx('M60 70 Q36 62 28 92 Q22 124 40 140 Q56 146 62 122 Q64 96 60 70 Z'), f: '#8b5a3c' }]
+      },
+      { t: 'Bir gözün olacağı yere küçük bir leke çiz.', s: [{ d: E(80, 98, 13, 15), f: '#8b5a3c' }] },
+      { t: 'İki yuvarlak göz çiz. Biri lekenin içinde olsun.', s: eyes(80, 120, 100, 6.5) },
+      { t: 'Kafanın altına yayvan bir oval çiz. Burası burnu ve ağzı olacak.', s: [{ d: E(100, 130, 24, 17), f: '#fff1dc' }] },
+      {
+        t: 'Burnu, ağzı ve dışarı sarkan dili çiz.', s: [
+          { d: E(100, 122, 11, 7), k: 's' },
+          { d: 'M100 129 L100 135 M88 137 Q94 143 100 135 Q106 143 112 137', k: 'o' },
+          { d: 'M95 139 Q94 154 100 154 Q106 154 105 139 Z', f: '#ff7b9c', z: 8.5 },
+          ...blush(70, 130, 122)]
+      }
+    ]
+  },
+  {
+    id: 'panda', name: 'Panda', cat: 'hayvan', bg: '#e6f4ea',
+    steps: [
+      { t: 'Büyük, yayvan bir oval çiz. Bu, pandanın kafası.', s: [{ d: E(100, 114, 60, 52), f: '#ffffff' }] },
+      { t: 'Üstüne iki yuvarlak kulak çiz.', s: [{ d: C(56, 70, 20), f: INK_SOFT, z: -3 }, { d: C(144, 70, 20), f: INK_SOFT, z: -3 }] },
+      { t: 'Gözlerin olacağı yere iki eğik oval çiz. Bunlar göz lekeleri.', s: [{ d: RE(78, 110, 14, 19, 30), f: INK_SOFT }, { d: RE(122, 110, 14, 19, -30), f: INK_SOFT }] },
+      {
+        t: 'Lekelerin içine küçük gözler çiz.', s: [
+          { d: C(80, 106, 6), f: '#ffffff' }, { d: C(81, 107, 3.2), k: 's' },
+          { d: C(120, 106, 6), f: '#ffffff' }, { d: C(119, 107, 3.2), k: 's' }]
+      },
+      {
+        t: 'Küçük bir burun ve gülümseyen ağzı çiz.', s: [
+          { d: E(100, 130, 9, 6), k: 's' },
+          { d: 'M100 136 L100 141 M90 143 Q95 148 100 141 Q105 148 110 143', k: 'o' },
+          ...blush(64, 136, 138)]
+      }
+    ]
+  },
+  {
+    id: 'domuz', name: 'Domuzcuk', cat: 'hayvan', bg: '#ffe3ec',
+    steps: [
+      { t: 'Büyük bir oval kafa çiz.', s: [{ d: E(100, 112, 60, 52), f: '#ffb8cc' }] },
+      {
+        t: 'Üstüne iki küçük üçgen kulak çiz.', s: [
+          { d: 'M52 84 Q42 50 56 38 Q76 46 86 64 Z', f: PINK, z: -3 },
+          { d: mx('M52 84 Q42 50 56 38 Q76 46 86 64 Z'), f: PINK, z: -3 }]
+      },
+      { t: 'Ortaya yayvan bir oval burun çiz.', s: [{ d: E(100, 128, 26, 18), f: PINK }] },
+      { t: 'Burnun içine iki delik çiz.', s: [{ d: E(91, 128, 4, 6.5), k: 's' }, { d: E(109, 128, 4, 6.5), k: 's' }] },
+      {
+        t: 'Gözleri ve gülümseyen ağzı çiz.', s: [
+          ...eyes(76, 124, 100, 6.5),
+          { d: 'M90 153 Q100 161 110 153', k: 'o' },
+          ...blush(60, 140, 128)]
+      }
+    ]
+  },
+  {
+    id: 'civciv', name: 'Civciv', cat: 'hayvan', bg: '#fff3bf',
+    steps: [
+      { t: 'Büyük bir daire çiz. Bu, civcivin gövdesi.', s: [{ d: C(100, 114, 54), f: '#ffe066' }] },
+      { t: 'Tepesine kıvrık bir tüy perçemi çiz.', s: [{ d: 'M94 64 Q86 46 98 48 Q98 36 108 44 Q118 42 108 62', k: 'o' }] },
+      {
+        t: 'İki yanına küçük kanatlar çiz.', s: [
+          { d: 'M50 108 Q28 112 34 134 Q42 146 58 132 Z', f: '#fcc419' },
+          { d: mx('M50 108 Q28 112 34 134 Q42 146 58 132 Z'), f: '#fcc419' }]
+      },
+      { t: 'İki yuvarlak göz çiz.', s: eyes(82, 118, 102, 6.5) },
+      {
+        t: 'Ortaya iki üçgenden bir gaga çiz.', s: [
+          { d: 'M89 116 L100 109 L111 116 L100 126 Z', f: '#ff922b' },
+          { d: 'M89 116 L111 116', k: 'o' }]
+      },
+      {
+        t: 'Altına minik ayaklar çiz.', s: [
+          { d: 'M86 164 L80 180 M86 164 L86 182 M86 164 L92 180', k: 'o', sc: '#e8590c', z: -3 },
+          { d: 'M114 164 L108 180 M114 164 L114 182 M114 164 L120 180', k: 'o', sc: '#e8590c', z: -3 },
+          ...blush(72, 128, 120)]
+      }
+    ]
+  },
+  {
+    id: 'kurbaga', name: 'Kurbağa', cat: 'hayvan', bg: '#dff5e3',
+    steps: [
+      { t: 'Geniş, yayvan bir oval çiz. Bu, kurbağanın kafası.', s: [{ d: E(100, 122, 66, 46), f: '#69db7c' }] },
+      { t: 'Üstüne iki yuvarlak tümsek çiz.', s: [{ d: C(66, 82, 24), f: '#69db7c', z: -3 }, { d: C(134, 82, 24), f: '#69db7c', z: -3 }] },
+      {
+        t: 'Tümseklerin içine büyük gözler ve göz bebekleri çiz.', s: [
+          { d: C(66, 80, 14), f: '#ffffff' }, { d: C(68, 82, 6.5), k: 's' },
+          { d: C(134, 80, 14), f: '#ffffff' }, { d: C(132, 82, 6.5), k: 's' }]
+      },
+      {
+        t: 'Kocaman bir gülümseme ve iki minik burun deliği çiz.', s: [
+          { d: 'M58 124 Q100 160 142 124', k: 'o' },
+          { d: C(92, 110, 2.5), k: 's' }, { d: C(108, 110, 2.5), k: 's' },
+          ...blush(50, 150, 136)]
+      }
+    ]
+  },
+  {
+    id: 'penguen', name: 'Penguen', cat: 'hayvan', bg: '#e3f0fb',
+    steps: [
+      { t: 'Büyük, uzun bir oval çiz. Bu, penguenin gövdesi.', s: [{ d: E(100, 110, 54, 64), f: INK_SOFT }] },
+      { t: 'İçine üstü kalp gibi başlayan bir yüz ve göbek çiz.', s: [{ d: 'M100 72 Q86 56 72 66 Q60 78 66 100 Q58 138 76 160 Q100 176 124 160 Q142 138 134 100 Q140 78 128 66 Q114 56 100 72 Z', f: '#ffffff' }] },
+      {
+        t: 'İki yanına kanat çiz.', s: [
+          { d: 'M50 96 Q24 116 32 146 Q46 140 54 124 Z', f: INK_SOFT, z: -3 },
+          { d: mx('M50 96 Q24 116 32 146 Q46 140 54 124 Z'), f: INK_SOFT, z: -3 }]
+      },
+      { t: 'Altına iki küçük ayak çiz.', s: [{ d: E(82, 174, 14, 7), f: '#ffa94d', z: -4 }, { d: E(118, 174, 14, 7), f: '#ffa94d', z: -4 }] },
+      {
+        t: 'Gözleri ve üçgen gagayı çiz.', s: [
+          ...eyes(84, 116, 98, 6),
+          { d: 'M90 110 L110 110 L100 122 Z', f: '#ffa94d' },
+          ...blush(76, 124, 120, 2.5)]
+      }
+    ]
+  },
+  {
+    id: 'balik', name: 'Balık', cat: 'hayvan', bg: '#dbefff',
+    steps: [
+      { t: 'Yatay, limon gibi bir şekil çiz. Bu, balığın gövdesi.', s: [{ d: 'M48 100 Q92 46 142 76 Q162 88 164 100 Q162 112 142 124 Q92 154 48 100 Z', f: '#ffa94d' }] },
+      { t: 'Arkasına üçgen bir kuyruk çiz.', s: [{ d: 'M56 100 L22 70 Q32 100 22 130 Z', f: '#ff7a59', z: -3 }] },
+      {
+        t: 'Üstüne ve altına küçük yüzgeçler çiz.', s: [
+          { d: 'M84 72 Q96 38 124 70 Z', f: '#ff7a59', z: -2 },
+          { d: 'M94 128 Q104 152 122 126 Z', f: '#ff7a59', z: -2 }]
+      },
+      {
+        t: 'Büyük bir göz ve minik bir ağız çiz.', s: [
+          { d: C(138, 92, 9), f: '#ffffff' }, { d: C(140, 92, 4.5), k: 's' },
+          { d: 'M158 106 Q152 111 147 106', k: 'o' }]
+      },
+      {
+        t: 'Gövdeye kavisli çizgiler ekle.', s: [
+          { d: 'M116 80 Q106 100 116 120', k: 'o' },
+          { d: 'M80 82 Q92 100 80 118 M98 72 Q112 100 98 128', k: 'o', sc: '#e8590c' }]
+      },
+      { t: 'Etrafına baloncuklar çiz.', s: [{ d: C(178, 74, 7), f: '#d0ebff', w: 3 }, { d: C(186, 52, 5), f: '#d0ebff', w: 3 }, { d: C(175, 36, 4), f: '#d0ebff', w: 3 }] }
+    ]
+  },
+  {
+    id: 'salyangoz', name: 'Salyangoz', cat: 'hayvan', bg: '#ffeedd',
+    steps: [
+      { t: 'Büyük bir daire çiz. Bu, salyangozun kabuğu.', s: [{ d: C(112, 96, 42), f: '#ff9eb5' }] },
+      { t: 'Kabuğun içine, ortadan dışa doğru dönen bir sarmal çiz.', s: [{ d: spiral(112, 98, 3, 31, 2.25, Math.PI), k: 'o', sc: '#d6336c' }] },
+      { t: 'Kabuğun altına uzun bir gövde çiz. Sol ucu yukarı kalkıp baş olsun.', s: [{ d: 'M44 158 Q28 158 32 144 L40 104 Q44 88 58 90 Q72 92 72 108 L74 138 L150 138 Q172 140 176 158 Z', f: '#ffd8a8', z: -1 }] },
+      {
+        t: 'Başın üstüne iki anten çiz.', s: [
+          { d: 'M50 95 Q44 72 36 62', k: 'o', z: -2 }, { d: 'M64 96 Q68 72 76 62', k: 'o', z: -2 },
+          { d: C(36, 60, 4), k: 's', z: -2 }, { d: C(76, 60, 4), k: 's', z: -2 }]
+      },
+      {
+        t: 'Gözleri ve küçük bir gülümseme çiz.', s: [
+          ...eyes(51, 64, 108, 4.5),
+          { d: 'M50 120 Q57 126 64 120', k: 'o' }]
+      }
+    ]
+  },
+  {
+    id: 'tirtil', name: 'Tırtıl', cat: 'hayvan', bg: '#e8f8d8',
+    steps: [
+      { t: 'Sağ tarafa yuvarlak bir kafa çiz.', s: [{ d: C(148, 100, 30), f: '#8ce99a' }] },
+      {
+        t: 'Kafanın arkasına, gittikçe küçülen daireler çiz. Bunlar tırtılın gövdesi.', s: [
+          { d: C(112, 122, 24), f: '#69db7c', z: -1 },
+          { d: C(78, 128, 23), f: '#8ce99a', z: -2 },
+          { d: C(46, 124, 21), f: '#69db7c', z: -3 }]
+      },
+      {
+        t: 'Kafasına iki anten çiz.', s: [
+          { d: 'M138 74 Q132 56 122 50', k: 'o', z: -4 }, { d: 'M158 75 Q164 56 176 51', k: 'o', z: -4 },
+          { d: C(121, 49, 4.5), k: 's', z: -4 }, { d: C(177, 50, 4.5), k: 's', z: -4 }]
+      },
+      {
+        t: 'Gözleri ve gülümsemeyi çiz.', s: [
+          ...eyes(138, 160, 98, 5),
+          { d: 'M140 112 Q149 120 158 112', k: 'o' },
+          ...blush(131, 167, 110, 0.5, 6, 4)]
+      },
+      { t: 'Gövdenin altına minik bacaklar ekle.', s: [{ d: 'M40 142 L36 154 M52 143 L54 155 M72 148 L68 160 M86 148 L88 160 M106 143 L102 156 M120 143 L122 156', k: 'o', z: -5 }] }
+    ]
+  },
+
+  /* ===== LEZZETLER ===== */
+  {
+    id: 'cupcake', name: 'Cupcake', cat: 'tatli', bg: '#ffe0ec',
+    steps: [
+      { t: 'Üstte kabarık, bulut gibi bir krema çiz.', s: [{ d: 'M50 122 Q38 106 54 96 Q50 72 76 74 Q82 52 104 56 Q128 52 130 74 Q154 74 148 96 Q164 106 152 122 Q140 132 126 122 Q114 132 100 124 Q86 132 74 122 Q60 132 50 122 Z', f: '#ffa8cc' }] },
+      { t: 'Kremanın altına, aşağı doğru daralan bir kap çiz.', s: [{ d: 'M56 116 L144 116 L132 170 Q130 178 122 178 L78 178 Q70 178 68 170 Z', f: '#74c0fc', z: -1 }] },
+      { t: 'Kabın üzerine dik çizgiler çiz.', s: [{ d: 'M78 118 L84 176 M100 118 L100 177 M122 118 L116 176', k: 'o', sc: '#1c7ed6', z: -0.5 }] },
+      { t: 'En tepeye bir kiraz koy.', s: [{ d: 'M104 38 Q108 24 120 20', k: 'o', sc: '#2b8a3e', z: 0.5 }, { d: C(102, 47, 11), f: '#ff4d6d' }] },
+      {
+        t: 'Kremanın üstüne şekerlemeler serp.', s: [
+          ['M70 98 L77 94', 0], ['M92 82 L98 87', 1], ['M116 76 L121 82', 2], ['M130 98 L137 94', 3], ['M86 108 L92 112', 4], ['M110 104 L115 110', 5]
+        ].map(([d, i]) => ({ d, k: 'o', sc: SPRINKLES[i] }))
+      },
+      {
+        t: 'Kaba sevimli bir yüz çiz.', s: [
+          ...eyes(87, 113, 142, 5.5),
+          { d: 'M94 151 Q100 157 106 151', k: 'o' },
+          ...blush(77, 123, 154, -0.7, 7, 4.5)]
+      }
+    ]
+  },
+  {
+    id: 'dondurma', name: 'Dondurma', cat: 'tatli', bg: '#fff0f5',
+    steps: [
+      { t: 'Ucu aşağıda olan bir üçgen çiz. Bu, külah.', s: [{ d: 'M64 106 L136 106 L103 180 Q100 186 97 180 Z', f: '#f4b860' }] },
+      { t: 'Külahın üstüne, damla damla akan yuvarlak bir dondurma çiz.', s: [{ d: 'M54 108 Q46 72 78 62 Q100 30 124 60 Q156 68 146 106 Q140 116 132 108 Q126 124 116 110 Q106 120 98 110 Q88 126 80 110 Q68 118 54 108 Z', f: '#ffa8cc' }] },
+      { t: 'Külaha çapraz çizgiler çiz, kareli olsun.', s: [{ d: 'M67 113 L118 147 M79 139 L108 169 M133 113 L82 147 M121 139 L92 169', k: 'o', sc: '#c98a3a', z: 0.5 }] },
+      { t: 'En tepeye bir kiraz koy.', s: [{ d: 'M103 30 Q107 18 117 14', k: 'o', sc: '#2b8a3e', z: 1.5 }, { d: C(101, 40, 10), f: '#ff4d6d' }] },
+      {
+        t: 'Dondurmaya sevimli bir yüz çiz.', s: [
+          ...eyes(86, 116, 84, 5.5),
+          { d: 'M95 92 Q101 99 107 92', k: 'o' },
+          ...blush(76, 126, 94, 1.2)]
+      }
+    ]
+  },
+  {
+    id: 'donut', name: 'Donut', cat: 'tatli', bg: '#fdebd3',
+    steps: [
+      { t: 'Büyük bir daire çiz. Bu, donutun hamuru.', s: [{ d: C(100, 104, 64), f: '#e9b872' }] },
+      { t: 'İçine dalgalı kenarlı bir krema çiz.', s: [{ d: wavy(100, 104, 52, 4.5, 9), f: '#ff8fc7' }] },
+      { t: 'Ortasına küçük bir delik çiz.', s: [{ d: C(100, 104, 18), f: '#ffffff' }] },
+      {
+        t: 'Kremanın üstüne renkli şekerlemeler serp.', s: [
+          'M74 76 L80 72', 'M118 68 L124 72', 'M138 96 L140 103', 'M128 126 L122 130', 'M96 140 L103 140', 'M68 120 L72 126', 'M64 96 L66 90', 'M116 80 L121 84'
+        ].map((d, i) => ({ d, k: 'o', sc: SPRINKLES[i] }))
+      }
+    ]
+  },
+  {
+    id: 'cilek', name: 'Çilek', cat: 'tatli', bg: '#ffe3e3',
+    steps: [
+      { t: 'Aşağı doğru sivrilen, kalp gibi bir şekil çiz. Bu, çileğin gövdesi.', s: [{ d: 'M100 176 Q54 150 50 102 Q50 74 76 72 Q100 76 124 72 Q150 74 150 102 Q146 150 100 176 Z', f: '#ff4d6d' }] },
+      { t: 'Tepesine yıldız gibi sivri yapraklar çiz.', s: [{ d: 'M70 78 L78 58 L92 70 L100 50 L108 70 L122 58 L130 78 Q100 90 70 78 Z', f: '#51cf66' }] },
+      { t: 'Yaprakların ortasına küçük bir sap ekle.', s: [{ d: 'M100 52 Q102 38 112 32', k: 'o', sc: '#2b8a3e', z: 0.5 }] },
+      { t: 'Gövdeye küçük çekirdekler serp.', s: [[68, 100], [132, 100], [100, 98], [64, 128], [136, 128], [78, 146], [122, 146], [100, 156]].map(([x, y]) => ({ d: E(x, y, 3, 4.5), f: '#ffe066', w: 2.4 })) },
+      {
+        t: 'Sevimli bir yüz çiz.', s: [
+          ...eyes(86, 114, 114, 5.5),
+          { d: 'M92 125 Q100 133 108 125', k: 'o' }]
+      }
+    ]
+  },
+
+  /* ===== DOĞA VE EV ===== */
+  {
+    id: 'gunes', name: 'Güneş', cat: 'doga', bg: '#fff4c2',
+    steps: [
+      { t: 'Ortaya büyük bir daire çiz.', s: [{ d: C(100, 100, 44), f: '#ffd43b' }] },
+      { t: 'Etrafına her yöne giden ışın çizgileri çiz.', s: [{ d: rays(100, 100, 56, 76, 12, -Math.PI / 2), k: 'o', sc: '#ff922b', w: 5.5 }] },
+      {
+        t: 'Mutlu, kapalı gözler ve kocaman bir gülümseme çiz.', s: [
+          { d: 'M78 95 Q85 85 92 95 M108 95 Q115 85 122 95', k: 'o' },
+          { d: 'M82 108 Q100 128 118 108', k: 'o' },
+          ...blush(72, 128, 110)]
+      }
+    ]
+  },
+  {
+    id: 'yildiz', name: 'Yıldız', cat: 'doga', bg: '#fff9db',
+    steps: [
+      { t: 'Yukarıyı gösteren sivri bir çatı çiz.', s: [{ d: pl(S.star.I[4], S.star.P[0], S.star.I[0]), k: 'o' }, { d: pl(...S.star.P.flatMap((p, i) => [p, S.star.I[i]])) + 'Z', k: 'c', f: '#ffd43b', op: 1, z: -10 }] },
+      { t: 'Sağa ve sola birer kol çiz.', s: [{ d: pl(S.star.I[4], S.star.P[4], S.star.I[3]), k: 'o' }, { d: pl(S.star.I[0], S.star.P[1], S.star.I[1]), k: 'o' }] },
+      { t: 'Aşağıya iki bacak çizerek yıldızı tamamla.', s: [{ d: pl(S.star.I[3], S.star.P[3], S.star.I[2], S.star.P[2], S.star.I[1]), k: 'o' }] },
+      {
+        t: 'Sevimli bir yüz çiz.', s: [
+          ...eyes(88, 112, 104, 5),
+          { d: 'M93 115 Q100 122 107 115', k: 'o' },
+          ...blush(80, 120, 117, 0, 6.5, 4)]
+      }
+    ]
+  },
+  {
+    id: 'gokkusagi', name: 'Gökkuşağı', cat: 'doga', bg: '#e7f5ff',
+    steps: [
+      { t: 'Büyük bir yay çiz, bir kemer gibi.', s: [{ d: arc(100, 150, 74), k: 'o' }, { d: band(100, 150, 74, 60), k: 'c', f: '#ff6b6b', op: 1, z: -10 }, { d: band(100, 150, 60, 46), k: 'c', f: '#ffd43b', op: 1, z: -10 }, { d: band(100, 150, 46, 32), k: 'c', f: '#4dabf7', op: 1, z: -10 }] },
+      { t: 'İçine gittikçe küçülen üç yay daha çiz.', s: [{ d: arc(100, 150, 60), k: 'o' }, { d: arc(100, 150, 46), k: 'o' }, { d: arc(100, 150, 32), k: 'o' }] },
+      {
+        t: 'Yayların iki ucuna kabarık bulutlar çiz.', s: [
+          { d: mv('M-32 16 Q-46 16 -44 2 Q-42 -12 -26 -10 Q-24 -28 -4 -26 Q12 -36 24 -18 Q42 -20 42 -2 Q48 14 32 16 Z', 40, 150, 0.82), f: '#f8fbff' },
+          { d: mv('M-32 16 Q-46 16 -44 2 Q-42 -12 -26 -10 Q-24 -28 -4 -26 Q12 -36 24 -18 Q42 -20 42 -2 Q48 14 32 16 Z', 160, 150, 0.82, true), f: '#f8fbff' }]
+      },
+      {
+        t: 'Bulutlara gülen yüzler çiz.', s: [
+          { d: C(33, 148, 2.8), k: 's' }, { d: C(47, 148, 2.8), k: 's' }, { d: 'M36 155 Q40 159 44 155', k: 'o' },
+          { d: C(153, 148, 2.8), k: 's' }, { d: C(167, 148, 2.8), k: 's' }, { d: 'M156 155 Q160 159 164 155', k: 'o' }]
+      }
+    ]
+  },
+  {
+    id: 'cicek', name: 'Çiçek', cat: 'doga', bg: '#ffe8f0',
+    steps: [
+      { t: 'Ortaya küçük bir daire çiz.', s: [{ d: C(100, 78, 18), f: '#ffd43b' }] },
+      { t: 'Etrafına yuvarlak taç yapraklar çiz.', s: [[132, 78], [116, 105.7], [84, 105.7], [68, 78], [84, 50.3], [116, 50.3]].map(([x, y]) => ({ d: C(x, y, 19), f: PINK, z: -2 })) },
+      { t: 'Aşağıya uzun, hafif kıvrık bir sap çiz.', s: [{ d: 'M100 112 Q94 148 100 184', k: 'o', sc: '#2f9e44', z: -5, w: 5 }] },
+      {
+        t: 'Sapın iki yanına birer yaprak çiz.', s: [
+          { d: 'M98 150 Q70 128 60 146 Q76 162 98 150 Z', f: '#69db7c', z: -4 },
+          { d: 'M99 164 Q126 142 140 158 Q124 176 99 164 Z', f: '#69db7c', z: -4 }]
+      },
+      {
+        t: 'Ortadaki daireye gülen bir yüz çiz.', s: [
+          { d: C(93, 75, 2.8), k: 's' }, { d: C(107, 75, 2.8), k: 's' },
+          { d: 'M93 83 Q100 89 107 83', k: 'o' }]
+      }
+    ]
+  },
+  {
+    id: 'ev', name: 'Ev', cat: 'doga', bg: '#fff1d6',
+    steps: [
+      { t: 'Büyük bir kare çiz. Bu, evin duvarları.', s: [{ d: 'M54 96 L146 96 L146 176 L54 176 Z', f: '#ffe3a3' }] },
+      { t: 'Üstüne üçgen bir çatı çiz.', s: [{ d: 'M42 100 L100 46 L158 100 Z', f: '#ff6b6b' }] },
+      {
+        t: 'Çatının arkasına bir baca, üstüne de kıvrık bir duman çiz.', s: [
+          { d: 'M120 82 L120 54 L136 54 L136 82 Z', f: '#c0703f', z: -1 },
+          { d: 'M128 46 Q118 36 128 28 Q138 20 130 10', k: 'o', sc: '#adb5bd' }]
+      },
+      {
+        t: 'Ortaya kemerli bir kapı çiz.', s: [
+          { d: 'M88 176 L88 148 Q88 134 100 134 Q112 134 112 148 L112 176 Z', f: '#a0613a' },
+          { d: C(106, 157, 2.5), k: 's' }]
+      },
+      {
+        t: 'İki yana kareli pencereler çiz.', s: [
+          { d: 'M62 110 L82 110 L82 130 L62 130 Z', f: '#a5d8ff' }, { d: 'M72 110 L72 130 M62 120 L82 120', k: 'o' },
+          { d: 'M118 110 L138 110 L138 130 L118 130 Z', f: '#a5d8ff' }, { d: 'M128 110 L128 130 M118 120 L138 120', k: 'o' }]
+      },
+      { t: 'Altına bir çimen çizgisi çiz.', s: [{ d: 'M24 176 L176 176', k: 'o', sc: '#37b24d', w: 5 }] }
+    ]
+  }
+];
+
+const CATS = [
+  { id: 'hepsi', name: 'Hepsi' },
+  { id: 'hayvan', name: 'Hayvanlar' },
+  { id: 'tatli', name: 'Lezzetler' },
+  { id: 'doga', name: 'Doğa ve Ev' }
+];
+
+/* ---------- SVG üretimi ---------- */
+const INK = '#2d3047', NEW_COL = '#ff6b57', PAPER = '#ffffff', TRACE_COL = '#7d86b0', TRACE_NEW = '#ff8a78', SW = 4.5;
+
+function allShapes(dr) {
+  if (dr._all) return dr._all;
+  let idx = 0; const out = [];
+  dr.steps.forEach((st, si) => st.s.forEach(sh => {
+    sh.d.split(/(?=M)/).map(p => p.trim()).filter(Boolean).forEach(pd => {
+      out.push({ ...sh, d: pd, si, z: sh.z ?? idx, ord: out.length });
+    });
+    idx++;
+  }));
+  out.sort((a, b) => a.z - b.z || a.ord - b.ord);
+  dr._all = out;
+  return out;
+}
+
+function shapeEl(sh, mode, isNew) {
+  const kind = sh.k || 'f';
+  const sw = sh.w || SW;
+  let fill, stroke;
+  if (mode === 'final') {
+    if (kind === 'c') return `<path d="${sh.d}" fill="${sh.f}" opacity="${sh.op ?? 1}"/>`;
+    if (kind === 'h') return `<path d="${sh.d}" fill="#fff"/>`;
+    fill = kind === 's' ? INK : kind === 'o' ? 'none' : (sh.f || PAPER);
+    stroke = sh.sc || INK;
+  } else {
+    const col = isNew ? (mode === 'trace' ? TRACE_NEW : NEW_COL) : (mode === 'trace' ? TRACE_COL : INK);
+    if (kind === 'h') return `<path d="${sh.d}" fill="#fff"${isNew ? ' class="nw nh"' : ''}/>`;
+    fill = kind === 's' ? col : kind === 'o' ? 'none' : PAPER;
+    stroke = col;
+  }
+  const cls = isNew ? ` class="nw${kind === 'o' ? '' : ' nf'}" data-o="${sh.ord}"` : '';
+  return `<path d="${sh.d}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"${cls}/>`;
+}
+
+/* mode: final | guide | trace | template ; k: güncel adım (0'dan) */
+function drawingSVG(dr, k, mode, size) {
+  const shapes = allShapes(dr);
+  let body = '';
+  for (const sh of shapes) {
+    if (mode === 'final') { body += shapeEl(sh, 'final', false); continue; }
+    if ((sh.k || 'f') === 'c') continue;
+    if (mode === 'template') { body += shapeEl(sh, 'guide', false); continue; }
+    if (sh.si > k) continue;
+    body += shapeEl(sh, mode, sh.si === k);
+  }
+  const wh = size ? ` width="${size}" height="${size}"` : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"${wh}>${body}</svg>`;
+}
+
+/* ---------- kalemi tutan 3D görünümlü el (kalem ucu 0,0 noktasında) ---------- */
+const HAND = (() => {
+  const ANG = 52 * Math.PI / 180;
+  const U = [Math.cos(ANG), -Math.sin(ANG)], N = [Math.sin(ANG), Math.cos(ANG)];
+  const P = (a, o) => [a * U[0] + o * N[0], a * U[1] + o * N[1]];
+  const f = n => Math.round(n * 10) / 10;
+  const LIGHT = (() => { const l = Math.hypot(-0.55, -0.83); return [-0.55 / l, -0.83 / l]; })(); // ışık sol üstten
+
+  // kapalı, yumuşak eğri (ekran noktaları)
+  const smoothScreen = q => {
+    const n = q.length;
+    let d = `M${f(q[0][0])} ${f(q[0][1])}`;
+    for (let i = 0; i < n; i++) {
+      const p0 = q[(i - 1 + n) % n], p1 = q[i], p2 = q[(i + 1) % n], p3 = q[(i + 2) % n];
+      const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+      const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+      d += `C${f(c1[0])} ${f(c1[1])} ${f(c2[0])} ${f(c2[1])} ${f(p2[0])} ${f(p2[1])}`;
+    }
+    return d + 'Z';
+  };
+  const smooth = pts => smoothScreen(pts.map(([a, o]) => P(a, o)));
+  const openSmooth = pts => {
+    const q = pts.map(([a, o]) => P(a, o));
+    let d = `M${f(q[0][0])} ${f(q[0][1])}`;
+    for (let i = 0; i < q.length - 1; i++) {
+      const p0 = q[Math.max(0, i - 1)], p1 = q[i], p2 = q[i + 1], p3 = q[Math.min(q.length - 1, i + 2)];
+      const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+      const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+      d += `C${f(c1[0])} ${f(c1[1])} ${f(c2[0])} ${f(c2[1])} ${f(p2[0])} ${f(p2[1])}`;
+    }
+    return d;
+  };
+
+  /* parmak: merkez çizgisi (a, o, yarıçap) -> yuvarlak uçlu, eklem yerleri kabarık tüp */
+  let gid = 0;
+  const defs = [];
+  function tube(cl, opt = {}) {
+    const C = cl.map(([a, o]) => P(a, o)), R = cl.map(c => c[2]);
+    const k = C.length;
+    const T = C.map((c, i) => {
+      const p = C[Math.max(0, i - 1)], q = C[Math.min(k - 1, i + 1)];
+      const l = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1;
+      return [(q[0] - p[0]) / l, (q[1] - p[1]) / l];
+    });
+    const Nn = T.map(t => [-t[1], t[0]]);
+    const left = C.map((c, i) => [c[0] + Nn[i][0] * R[i], c[1] + Nn[i][1] * R[i]]);
+    const right = C.map((c, i) => [c[0] - Nn[i][0] * R[i], c[1] - Nn[i][1] * R[i]]);
+    const cap = (c, t, n, r) => [60, 30, 0, -30, -60].map(deg => {
+      const ph = deg * Math.PI / 180;
+      return [c[0] + r * (Math.cos(ph) * t[0] + Math.sin(ph) * n[0]), c[1] + r * (Math.cos(ph) * t[1] + Math.sin(ph) * n[1])];
+    });
+    const endCap = cap(C[k - 1], T[k - 1], Nn[k - 1], R[k - 1]);
+    const startCap = cap(C[0], [-T[0][0], -T[0][1]], [-Nn[0][0], -Nn[0][1]], R[0]);
+    const pts = [...left, ...endCap, ...right.slice().reverse(), ...startCap];
+    const d = smoothScreen(pts);
+    // ışık yönüne göre silindir gölgelemesi
+    const m = Math.floor(k / 2), Mc = C[m], nm = Nn[m], rm = R[m];
+    const lit = nm[0] * LIGHT[0] + nm[1] * LIGHT[1] > 0 ? 1 : -1;
+    const A = [Mc[0] + nm[0] * rm * lit, Mc[1] + nm[1] * rm * lit], B = [Mc[0] - nm[0] * rm * lit, Mc[1] - nm[1] * rm * lit];
+    const id = 'g' + (gid++);
+    defs.push(`<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${f(A[0])}" y1="${f(A[1])}" x2="${f(B[0])}" y2="${f(B[1])}">
+      <stop offset="0" stop-color="${opt.c0 || '#ffe2cd'}"/><stop offset=".32" stop-color="${opt.c1 || '#f7c7a6'}"/>
+      <stop offset=".78" stop-color="${opt.c2 || '#e3a582'}"/><stop offset="1" stop-color="${opt.c3 || '#c98764'}"/></linearGradient>`);
+    // parlak sırt çizgisi (ışık alan tarafta)
+    const ridge = C.map((c, i) => [c[0] + Nn[i][0] * R[i] * 0.42 * lit, c[1] + Nn[i][1] * R[i] * 0.42 * lit]);
+    let rd = `M${f(ridge[0][0])} ${f(ridge[0][1])}`;
+    for (let i = 1; i < k; i++) rd += `L${f(ridge[i][0])} ${f(ridge[i][1])}`;
+    return { d, fill: `url(#${id})`, ridge: rd, C, T, Nn, R, lit };
+  }
+  const skin = (t, extra = '') => `<path d="${t.d}" fill="${t.fill}" stroke="#b9775a" stroke-opacity=".45" stroke-width="1.1" ${extra}/>`;
+  const ao = t => `<path d="${t.d}" fill="#6b3d26" opacity=".32" filter="url(#blur3)" transform="translate(2.5 4)"/>`;
+  const ridge = (t, w = 3, op = 0.5) => `<path d="${t.ridge}" fill="none" stroke="#fff6ef" stroke-width="${w}" stroke-linecap="round" opacity="${op}" filter="url(#blur1)"/>`;
+  // tırnak: parmak ucuna yakın, parmak eksenine paralel
+  function nail(t, from, len, wMul) {
+    const i0 = Math.min(t.C.length - 1, from);
+    const c = t.C[i0], tt = t.T[i0], n = t.Nn[i0], r = t.R[i0] * wMul;
+    const tipward = [-tt[0], -tt[1]];   // merkez çizgisi uçtan geriye doğru tanımlı
+    const pts = [];
+    for (let j = 0; j <= 8; j++) {
+      const ph = Math.PI * j / 8;   // uç tarafta yuvarlak
+      pts.push([c[0] + tipward[0] * (len * 0.15 + Math.sin(ph) * len * 0.35) + n[0] * Math.cos(ph) * r, c[1] + tipward[1] * (len * 0.15 + Math.sin(ph) * len * 0.35) + n[1] * Math.cos(ph) * r]);
+    }
+    pts.push([c[0] - tipward[0] * len * 0.55 - n[0] * r * 0.92, c[1] - tipward[1] * len * 0.55 - n[1] * r * 0.92]);
+    pts.push([c[0] - tipward[0] * len * 0.62, c[1] - tipward[1] * len * 0.62]);
+    pts.push([c[0] - tipward[0] * len * 0.55 + n[0] * r * 0.92, c[1] - tipward[1] * len * 0.55 + n[1] * r * 0.92]);
+    const d = smoothScreen(pts);
+    const hl = `M${f(c[0] + n[0] * r * 0.35 * t.lit)} ${f(c[1] + n[1] * r * 0.35 * t.lit)}l${f(-tipward[0] * len * 0.35)} ${f(-tipward[1] * len * 0.35)}`;
+    return `<path d="${d}" fill="url(#nailG)" stroke="#c98a72" stroke-width=".9" stroke-opacity=".7"/>
+      <path d="${hl}" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".75"/>`;
+  }
+  const crease = (t, i, w = 0.75) => {
+    const c = t.C[i], n = t.Nn[i], r = t.R[i] * w, tt = t.T[i];
+    const a = [c[0] + n[0] * r, c[1] + n[1] * r], b = [c[0] - n[0] * r, c[1] - n[1] * r], m = [c[0] + tt[0] * 2.2, c[1] + tt[1] * 2.2];
+    return `<path d="M${f(a[0])} ${f(a[1])}Q${f(m[0])} ${f(m[1])} ${f(b[0])} ${f(b[1])}" fill="none" stroke="#a8644a" stroke-width="1.3" stroke-linecap="round" opacity=".45"/>`;
+  };
+
+  /* ---- parçalar ---- */
+  const index = tube([[34, 3.2, 7.6], [42, 3.3, 8.2], [52, 3.6, 8.5], [60, 4, 8.7], [70, 4.6, 9.3], [80, 5.4, 9.8], [92, 6.6, 10.4], [106, 8, 11.2]]);
+  const thumb = tube([[49, -13.5, 8.4], [58, -15.5, 9.2], [70, -19, 10], [84, -23, 10.8], [100, -26, 11.6], [114, -27, 12.2]], { c0: '#ffe0ca', c3: '#c58262' });
+  const middle = tube([[47, 16.5, 7.6], [58, 18.5, 8.4], [72, 22, 9.2], [88, 27, 9.8], [104, 31, 10.4]], { c0: '#f8cfb2', c1: '#efb994', c2: '#d99974', c3: '#bf7c5c' });
+  const ring = tube([[70, 40, 8.6], [82, 42, 9.4], [96, 43, 10], [110, 42, 10.4]], { c0: '#f6cbac', c1: '#ecb48f', c2: '#d69570', c3: '#bb7858' });
+  const pinky = tube([[74, 57, 7.4], [86, 58, 8], [98, 57, 8.6], [110, 54, 9]], { c0: '#f6cbac', c1: '#ecb48f', c2: '#d69570', c3: '#bb7858' });
+  const backPts = [[104, -32], [122, -27], [136, -8], [142, 18], [138, 46], [128, 78], [124, 120], [122, 175], [120, 240], [36, 246], [40, 170], [48, 118], [58, 86], [66, 66], [74, 40], [82, 12], [90, -16]];
+  const back = smooth(backPts);
+  const bc = P(116, -2), bs = P(70, 150);
+  defs.push(`<radialGradient id="backG" gradientUnits="userSpaceOnUse" cx="${f(bc[0])}" cy="${f(bc[1])}" r="170" fx="${f(bc[0] - 18)}" fy="${f(bc[1] - 20)}">
+    <stop offset="0" stop-color="#ffe0ca"/><stop offset=".35" stop-color="#f7c6a4"/><stop offset=".75" stop-color="#e5a884"/><stop offset="1" stop-color="#c88565"/></radialGradient>`);
+  defs.push(`<linearGradient id="wristShade" gradientUnits="userSpaceOnUse" x1="${f(P(60, 60)[0])}" y1="${f(P(60, 60)[1])}" x2="${f(bs[0])}" y2="${f(bs[1])}">
+    <stop offset="0" stop-color="#9c5a3c" stop-opacity="0"/><stop offset="1" stop-color="#9c5a3c" stop-opacity=".35"/></linearGradient>`);
+  const knuckles = [[104, 8, 9], [108, 29, 8.5], [106, 47, 8], [100, 62, 7]].map(([a, o, r]) => {
+    const p = P(a, o);
+    return `<ellipse cx="${f(p[0])}" cy="${f(p[1])}" rx="${r}" ry="${f(r * 0.7)}" transform="rotate(${-52} ${f(p[0])} ${f(p[1])})" fill="#fff4ea" opacity=".42" filter="url(#blur2)"/>`;
+  }).join('');
+  const tendons = [[[110, 8], [128, 30], [124, 80]], [[114, 28], [130, 50], [124, 95]]].map(l => `<path d="${openSmooth(l)}" fill="none" stroke="#fff1e6" stroke-width="2.4" opacity=".28" filter="url(#blur1)"/>`).join('');
+  const backEdgeShade = `<path d="${openSmooth([[66, 66], [58, 86], [48, 118], [40, 170], [36, 246]])}" fill="none" stroke="#a25f42" stroke-width="10" opacity=".22" filter="url(#blur3)"/>`;
+
+  // kazak kolu (örgü)
+  const sleeve = `M${P(34, 158).map(f).join(' ')}Q${P(80, 144).map(f).join(' ')} ${P(126, 150).map(f).join(' ')}L${P(156, 340).map(f).join(' ')}L${P(-6, 350).map(f).join(' ')}Z`;
+  const cuffTop = `M${P(34, 158).map(f).join(' ')}Q${P(80, 144).map(f).join(' ')} ${P(126, 150).map(f).join(' ')}L${P(129, 176).map(f).join(' ')}Q${P(80, 170).map(f).join(' ')} ${P(32, 184).map(f).join(' ')}Z`;
+  let ribs = '';
+  for (let a = 40; a <= 122; a += 7) {
+    const t = (a - 34) / 92, oTop = 158 - Math.sin(t * Math.PI) * 11 + t * (-8), oBot = 184 - Math.sin(t * Math.PI) * 11 + t * (-8);
+    ribs += `M${P(a, oTop + 1).map(f).join(' ')}L${P(a, oBot - 1).map(f).join(' ')}`;
+  }
+  const sl0 = P(30, 200), sl1 = P(130, 200);
+  defs.push(`<linearGradient id="sleeveG" gradientUnits="userSpaceOnUse" x1="${f(sl0[0])}" y1="${f(sl0[1])}" x2="${f(sl1[0])}" y2="${f(sl1[1])}">
+    <stop offset="0" stop-color="#2f66b8"/><stop offset=".55" stop-color="#5a97e3"/><stop offset="1" stop-color="#86baf5"/></linearGradient>`);
+
+  // altıgen kalem (kalemin kendi ekseninde çizilir, sonra döndürülür)
+  const pencil = `<g transform="rotate(-52)">
+    <rect x="31" y="-7.6" width="262" height="15.2" fill="var(--pc,#f5c02e)"/>
+    <rect x="31" y="-7.6" width="262" height="4.9" fill="#fff" opacity=".38"/>
+    <rect x="31" y="2.7" width="262" height="4.9" fill="#000" opacity=".2"/>
+    <path d="M31 -2.7H293M31 2.7H293" stroke="#000" stroke-opacity=".12" stroke-width=".8"/>
+    <path d="M36 -5.2H290" stroke="#fff" stroke-width="1.3" stroke-linecap="round" opacity=".55"/>
+    <rect x="31" y="-7.6" width="262" height="15.2" fill="none" stroke="#6d5326" stroke-width="1.1" stroke-opacity=".8"/>
+    <rect x="293" y="-8" width="14" height="16" fill="url(#ferruleG)"/>
+    <path d="M296 -8v16M299.5 -8v16M303 -8v16" stroke="#7d8790" stroke-width="1" opacity=".8"/>
+    <rect x="307" y="-7.6" width="13" height="15.2" rx="4" fill="url(#eraserG)"/>
+    <path d="M0 0 L31 -7.6 Q27.6 -5.1 31 -2.6 Q27.6 0 31 2.6 Q27.6 5.1 31 7.6 Z" fill="url(#woodG)" stroke="#9a7246" stroke-width=".9" stroke-linejoin="round"/>
+    <path d="M0 0 L8.8 -2.2 L8.8 2.2 Z" fill="var(--tip,#38383e)"/>
+    <path d="M1.6 -0.5 L8 -1.7" stroke="#fff" stroke-width=".7" opacity=".55"/>
+  </g>`;
+  defs.push(`<linearGradient id="woodG" x1="0" y1="-1" x2="0" y2="1"><stop offset="0" stop-color="#fbe2b8"/><stop offset=".55" stop-color="#eccb98"/><stop offset="1" stop-color="#c99d68"/></linearGradient>
+    <linearGradient id="ferruleG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f6f8"/><stop offset=".45" stop-color="#c3cad1"/><stop offset="1" stop-color="#7f8a94"/></linearGradient>
+    <linearGradient id="eraserG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc2d2"/><stop offset=".5" stop-color="#ff8fab"/><stop offset="1" stop-color="#d9637f"/></linearGradient>
+    <linearGradient id="nailG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3ee"/><stop offset=".6" stop-color="#f7d3c6"/><stop offset="1" stop-color="#e8b2a0"/></linearGradient>
+    <filter id="blur1" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1"/></filter>
+    <filter id="blur2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.4"/></filter>
+    <filter id="blur3" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3"/></filter>`);
+
+  const body = `
+    ${pencil}
+    ${ao(middle)}${skin(middle)}${ridge(middle, 2.4, 0.35)}
+    ${ao(pinky)}${skin(pinky)}${ridge(pinky, 2.2, 0.35)}
+    ${ao(ring)}${skin(ring)}${ridge(ring, 2.2, 0.38)}
+    <path d="${back}" fill="#6b3d26" opacity=".25" filter="url(#blur3)" transform="translate(3 5)"/>
+    <path d="${back}" fill="url(#backG)" stroke="#b9775a" stroke-opacity=".45" stroke-width="1.1"/>
+    <path d="${back}" fill="url(#wristShade)"/>
+    ${backEdgeShade}${knuckles}${tendons}
+    ${ao(thumb)}${skin(thumb)}${ridge(thumb, 3, 0.5)}${crease(thumb, 3, 0.7)}${nail(thumb, 0, 13, 0.62)}
+    ${ao(index)}${skin(index)}${ridge(index, 3.2, 0.55)}${crease(index, 3)}${crease(index, 5)}${nail(index, 0, 13, 0.66)}
+    <path d="${sleeve}" fill="url(#sleeveG)"/>
+    <path d="${cuffTop}" fill="#4f8ad8" stroke="#2b5fae" stroke-width="1"/>
+    <path d="${ribs}" stroke="#2b5fae" stroke-width="1.6" opacity=".45" stroke-linecap="round"/>
+    <path d="${cuffTop}" fill="none" stroke="#9cc8ff" stroke-width="1.2" opacity=".5" transform="translate(-1 -1)"/>`;
+
+  const vb = { x: -30, y: -262, w: 340, h: 480 };
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.x} ${vb.y} ${vb.w} ${vb.h}" class="handsvg"><defs>${defs.join('')}</defs>${body}</svg>`;
+
+  // kâğıda düşen gölge (el kalkınca CSS ile uzaklaşır)
+  const sil = [index, thumb, middle, ring, pinky].map(t => `<path d="${t.d}"/>`).join('') + `<path d="${back}"/><path d="${sleeve}"/>
+    <g transform="rotate(-52)"><rect x="0" y="-7.6" width="320" height="15.2"/></g>`;
+  const shadow = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.x} ${vb.y} ${vb.w} ${vb.h}"><defs><filter id="shB" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5"/></filter></defs>
+    <g fill="#2b1c10" opacity=".3" filter="url(#shB)">${sil}</g></svg>`;
+  return { svg, shadow, vb };
+})();
+if (typeof module !== 'undefined') module.exports = HAND;
+
+/* ---------- gerçekçi kurşun kalem / boya kalemi motoru ---------- */
+const PencilEngine = (() => {
+  const NS = 'http://www.w3.org/2000/svg';
+  let mpath = null;
+  function measurer() {
+    if (mpath) return mpath;
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('width', '1'); svg.setAttribute('height', '1');
+    svg.style.cssText = 'position:absolute;left:-10px;top:-10px;width:1px;height:1px;overflow:hidden;visibility:hidden;pointer-events:none';
+    mpath = document.createElementNS(NS, 'path');
+    svg.appendChild(mpath); document.body.appendChild(svg);
+    return mpath;
+  }
+  const hit = document.createElement('canvas').getContext('2d');
+  const inPath = (p, x, y, rule) => hit.isPointInPath(p, x, y, rule || 'nonzero');
+  function rng(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  const LW = 2.35, SCRIB_W = 2.2, COLOR_W = 4.6, HL_W = 9.5;
+
+  function bboxOf(d) { const m = measurer(); m.setAttribute('d', d); try { const b = m.getBBox(); return { x: b.x, y: b.y, width: b.width, height: b.height }; } catch (e) { return { x: 0, y: 0, width: 200, height: 200 }; } }
+
+  /* el titremesi ve bastırma farkıyla örnekleme */
+  function sample(d, closed, rnd) {
+    const m = measurer(); m.setAttribute('d', d);
+    let L = 0; try { L = m.getTotalLength(); } catch (e) {}
+    if (!(L > 0)) L = 1;
+    const step = 0.7, n = Math.max(2, Math.ceil(L / step) + 1);
+    const raw = new Float32Array(n * 2);
+    for (let i = 0; i < n; i++) { const p = m.getPointAtLength(Math.min(L, i * L / (n - 1))); raw[2 * i] = p.x; raw[2 * i + 1] = p.y; }
+    const extra = closed ? Math.min(n - 2, Math.round(4.5 / step)) : 0;
+    const total = n + extra, pts = new Float32Array(total * 2), pr = new Float32Array(total);
+    const a1 = rnd() * 6.28, a2 = rnd() * 6.28, a3 = rnd() * 6.28, amp = 0.38 + rnd() * 0.12;
+    for (let i = 0; i < total; i++) {
+      const j = i < n ? i : (i - n + 1);
+      const jp = Math.min(n - 1, j + 1), jm = Math.max(0, j - 1);
+      let tx = raw[2 * jp] - raw[2 * jm], ty = raw[2 * jp + 1] - raw[2 * jm + 1];
+      const tl = Math.hypot(tx, ty) || 1; tx /= tl; ty /= tl;
+      const t = i * step;
+      const w = amp * (0.6 * Math.sin(t / 8 + a1) + 0.4 * Math.sin(t / 21 + a2)) + (i >= n ? 0.45 + (i - n) * 0.08 : 0);
+      pts[2 * i] = raw[2 * j] - ty * w; pts[2 * i + 1] = raw[2 * j + 1] + tx * w;
+      const tapS = Math.min(1, t / 5);
+      const tapE = closed ? (i >= n ? Math.max(0.2, 1 - (i - n) / Math.max(1, extra)) : 1) : Math.min(1, (L - t) / 5);
+      pr[i] = (0.86 + 0.18 * Math.sin(t / 13 + a3)) * (0.45 + 0.55 * Math.max(0, Math.min(tapS, tapE)));
+    }
+    return { pts, pr, n: total, L };
+  }
+
+  /* boya kalemiyle ileri-geri tarama (zikzak) */
+  function hatch(p2d, rule, bb, angleDeg, spacing, rnd, stepU) {
+    stepU = stepU || 1.1;
+    const a = angleDeg * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a);
+    const cs = [[bb.x, bb.y], [bb.x + bb.width, bb.y], [bb.x, bb.y + bb.height], [bb.x + bb.width, bb.y + bb.height]];
+    let umin = 1e9, umax = -1e9, vmin = 1e9, vmax = -1e9;
+    for (const [x, y] of cs) { const u = x * ca + y * sa, v = -x * sa + y * ca; umin = Math.min(umin, u); umax = Math.max(umax, u); vmin = Math.min(vmin, v); vmax = Math.max(vmax, v); }
+    const out = []; let dir = 1;
+    for (let v = vmin + spacing * 0.45; v < vmax; v += spacing) {
+      const row = [];
+      for (let u = umin - 1; u <= umax + 1; u += stepU) { const x = u * ca - v * sa, y = u * sa + v * ca; row.push(x, y, inPath(p2d, x, y, rule) ? 1 : 0); }
+      let s = -1, e = -1;
+      for (let i = 0; i < row.length / 3; i++) if (row[3 * i + 2]) { if (s < 0) s = i; e = i; }
+      if (s < 0) continue;
+      s = Math.max(0, s - 1); e = Math.min(row.length / 3 - 1, e + 1);
+      const jit = (rnd() - 0.5) * 0.7;
+      const idx = []; for (let i = s; i <= e; i++) idx.push(i);
+      if (dir < 0) idx.reverse(); dir = -dir;
+      for (const i of idx) out.push(row[3 * i] - sa * jit, row[3 * i + 1] + ca * jit);
+    }
+    const pts = new Float32Array(out), n = pts.length / 2, pr = new Float32Array(n);
+    for (let i = 0; i < n; i++) pr[i] = 0.9 + 0.12 * Math.sin(i / 9);
+    return { pts, pr, n: Math.max(n, 1) };
+  }
+
+  const nearWhite = hex => {
+    if (!hex || hex[0] !== '#' || hex.length < 7) return false;
+    const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+    return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 > 0.935;
+  };
+  const occludes = (o, g) => o.closed && (o.z > g.z || (o.z === g.z && o.ord > g.ord));
+
+  /* çizimi hazırla (bir kez) */
+  function prep(dr) {
+    if (dr._pe) return dr._pe;
+    const shapes = allShapes(dr);
+    const seed = hash(dr.id);
+    const lines = [];
+    for (const sh of shapes) {
+      const kind = sh.k || 'f';
+      if (kind === 'c' || kind === 'h') continue;
+      const g = Object.assign({}, sh, { kind, closed: kind === 'f' || kind === 's', p2d: new Path2D(sh.d) });
+      Object.assign(g, sample(sh.d, g.closed, rng(seed + sh.ord * 7919)));
+      if (kind === 's') {
+        const bb = bboxOf(sh.d);
+        g.clip = new Path2D(); g.clip.addPath(g.p2d);
+        for (const h of shapes) {
+          if (h.k !== 'h' || h.si !== sh.si) continue;
+          const hb = bboxOf(h.d), cx = hb.x + hb.width / 2, cy = hb.y + hb.height / 2;
+          if (inPath(g.p2d, cx, cy)) g.clip.addPath(new Path2D(h.d));
+        }
+        const small = Math.min(bb.width, bb.height) < 10;
+        g.scrib = hatch(g.clip, 'evenodd', bb, 32, small ? 1.15 : 1.5, rng(seed + sh.ord * 31), 0.8);
+      }
+      lines.push(g);
+    }
+    const byOrd = new Map(lines.map(g => [g.ord, g]));
+    let colorItems = null, traceItems = null;
+    const pe = {
+      lines, byOrd,
+      occluders(g, done) { return lines.filter(o => o !== g && done.has(o.ord) && occludes(o, g)); },
+      colorItems() {
+        if (colorItems) return colorItems;
+        const r = rng(seed + 77);
+        colorItems = [];
+        for (const sh of shapes) {
+          const kind = sh.k || 'f';
+          if (!((kind === 'f' && sh.f && !nearWhite(sh.f)) || kind === 'c')) continue;
+          const it = { id: sh.ord, z: sh.z, ord: sh.ord, color: sh.f, op: kind === 'c' ? (sh.op ?? 1) : 1, p2d: new Path2D(sh.d), d: sh.d, angle: 38 + (r() - 0.5) * 16, rnd: rng(seed + sh.ord * 13) };
+          it.occ = lines.filter(o => occludes(o, it));
+          colorItems.push(it);
+        }
+        return colorItems;
+      },
+      traceItems() {
+        if (traceItems) return traceItems;
+        traceItems = lines.filter(g => g.kind === 'o' && g.sc).map(g => ({ id: g.ord, g, color: g.sc, occ: lines.filter(o => occludes(o, g)) }));
+        return traceItems;
+      },
+      hatchFor(it) {
+        if (!it.h) it.h = hatch(it.p2d, 'nonzero', bboxOf(it.d), it.angle, 2.7, it.rnd);
+        return it.h;
+      }
+    };
+    dr._pe = pe;
+    return pe;
+  }
+
+  /* görünürlük (önünde başka şekil varsa çizgi gizli) */
+  function vis(pts, n, inside, rule, occ) {
+    const v = new Uint8Array(n);
+    for (let i = 0; i < n; i++) {
+      const x = pts[2 * i], y = pts[2 * i + 1];
+      let ok = inside ? inPath(inside, x, y, rule) : true;
+      if (ok) for (const o of occ) if (inPath(o.p2d, x, y)) { ok = false; break; }
+      v[i] = ok ? 1 : 0;
+    }
+    return v;
+  }
+  function cost(pts, n, v, hidden) {
+    hidden = hidden ?? 0.22;
+    const c = new Float32Array(n); let acc = 0;
+    for (let i = 1; i < n; i++) { const d = Math.hypot(pts[2 * i] - pts[2 * i - 2], pts[2 * i + 1] - pts[2 * i - 1]); acc += (v[i] || v[i - 1]) ? d : d * hidden; c[i] = acc; }
+    return c;
+  }
+  function idxAt(c, t) { let lo = 0, hi = c.length - 1; while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (c[mid] <= t) lo = mid; else hi = mid - 1; } return lo; }
+
+  /* doku karoları */
+  function noiseTile(rgb, aMin, aMax, seed) {
+    const S = 128, c = document.createElement('canvas'); c.width = c.height = S;
+    const x = c.getContext('2d'), im = x.createImageData(S, S), d = im.data, r = rng(seed);
+    const blot = new Float32Array(S * S);
+    for (let k = 0; k < 90; k++) {
+      const cx = r() * S, cy = r() * S, rad = 2 + r() * 6, s = (r() - 0.5) * 0.5;
+      for (let yy = -rad; yy <= rad; yy++) for (let xx = -rad; xx <= rad; xx++) {
+        if (xx * xx + yy * yy > rad * rad) continue;
+        const px = ((cx + xx) % S + S) % S | 0, py = ((cy + yy) % S + S) % S | 0; blot[py * S + px] += s;
+      }
+    }
+    for (let i = 0; i < S * S; i++) {
+      const t = Math.max(0, Math.min(1, r() * 0.75 + 0.25 + blot[i]));
+      d[4 * i] = rgb[0]; d[4 * i + 1] = rgb[1]; d[4 * i + 2] = rgb[2]; d[4 * i + 3] = Math.round(255 * (aMin + (aMax - aMin) * t));
+    }
+    x.putImageData(im, 0, 0);
+    return c;
+  }
+  const GRAPHITE_TILE = noiseTile([52, 52, 60], 0.5, 1, 11);
+  const colorTiles = {};
+  const hexRgb = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+  function colorTile(hex) { return colorTiles[hex] || (colorTiles[hex] = noiseTile(hexRgb(hex), 0.42, 0.95, hash(hex))); }
+  function paperDataURL() {
+    const S = 256, c = document.createElement('canvas'); c.width = c.height = S;
+    const x = c.getContext('2d'), im = x.createImageData(S, S), d = im.data, r = rng(5);
+    for (let i = 0; i < S * S; i++) { const n = (r() - 0.5) * 9; d[4 * i] = 251 + n; d[4 * i + 1] = 249 + n; d[4 * i + 2] = 243 + n; d[4 * i + 3] = 255; }
+    x.putImageData(im, 0, 0);
+    x.globalAlpha = 0.05; x.strokeStyle = '#8a7a60'; x.lineWidth = 0.6;
+    for (let k = 0; k < 70; k++) { const px = r() * S, py = r() * S, a = r() * 6.28, l = 3 + r() * 9; x.beginPath(); x.moveTo(px, py); x.quadraticCurveTo(px + Math.cos(a + 0.6) * l / 2, py + Math.sin(a + 0.6) * l / 2, px + Math.cos(a) * l, py + Math.sin(a) * l); x.stroke(); }
+    return c.toDataURL('image/png');
+  }
+
+  /* katmanlı çizici */
+  function makeRenderer() {
+    const mk = () => document.createElement('canvas').getContext('2d');
+    const R = { size: 0, k: 1, off: 0, lwMul: 1, tmp: mk(), graph: mk(), color: mk(), over: mk(), hl: mk(), mask: mk(), pk: null, pn: 0, psn: 0 };
+    const pat = {};
+    R.resize = px => {
+      px = Math.max(16, Math.round(px));
+      if (px === R.size) return false;
+      R.size = px;
+      for (const c of [R.tmp, R.graph, R.color, R.over, R.hl, R.mask]) c.canvas.width = c.canvas.height = px;
+      R.pk = null;
+      R.k = px * 0.9 / 200; R.off = px * 0.05; R.lwMul = px < 260 ? 1.55 : px < 500 ? 1.2 : 1;
+      for (const key in pat) delete pat[key];
+      return true;
+    };
+    const pattern = hex => pat[hex || 'g'] || (pat[hex || 'g'] = R.tmp.createPattern(hex ? colorTile(hex) : GRAPHITE_TILE, 'repeat'));
+    const toWorld = c => c.setTransform(R.k, 0, 0, R.k, R.off, R.off);
+    const clearTmp = () => { const c = R.tmp; c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1; c.clearRect(0, 0, R.size, R.size); return c; };
+    function strokeSolid(c, pts, pr, n, lw) {
+      if (n < 1) return;
+      c.lineCap = 'round'; c.lineJoin = 'round';
+      if (n === 1) { c.beginPath(); c.arc(pts[0], pts[1], lw * pr[0] / 2, 0, 7); c.fill(); return; }
+      const CH = 5;
+      for (let i = 0; i < n - 1; i += CH) {
+        const e = Math.min(n - 1, i + CH);
+        c.beginPath(); c.moveTo(pts[2 * i], pts[2 * i + 1]);
+        for (let j = i + 1; j <= e; j++) c.lineTo(pts[2 * j], pts[2 * j + 1]);
+        c.lineWidth = lw * pr[i]; c.stroke();
+      }
+    }
+    function strokeRange(c, pts, pr, a, b, lw) {
+      if (b - a < 1) return;
+      c.lineCap = 'round'; c.lineJoin = 'round';
+      const CH = 5;
+      for (let i = a; i < b - 1; i += CH) {
+        const e = Math.min(b - 1, i + CH);
+        c.beginPath(); c.moveTo(pts[2 * i], pts[2 * i + 1]);
+        for (let j = i + 1; j <= e; j++) c.lineTo(pts[2 * j], pts[2 * j + 1]);
+        c.lineWidth = lw * pr[i]; c.stroke();
+      }
+    }
+    /* o an çizilen şekil: yalnızca yeni parçaları ekleyerek (tablette akıcı olsun diye) */
+    R.partialPass = (target, cur) => {
+      const key = cur.type + ':' + (cur.g ? cur.g.ord : cur.it.id);
+      const m = R.mask;
+      if (R.pk !== key || cur.n < R.pn || (cur.sn || 0) < R.psn) {
+        m.setTransform(1, 0, 0, 1, 0, 0); m.clearRect(0, 0, R.size, R.size);
+        R.pk = key; R.pn = 0; R.psn = 0;
+      }
+      toWorld(m); m.fillStyle = m.strokeStyle = '#000';
+      let occ, hex = null, alpha = 0.95;
+      if (cur.type === 'graph') {
+        const g = cur.g;
+        if (cur.n > R.pn) { if (R.pn === 0 && cur.n === 1) strokeSolid(m, g.pts, g.pr, 1, LW * R.lwMul); else strokeRange(m, g.pts, g.pr, Math.max(0, R.pn - 1), cur.n, LW * R.lwMul); R.pn = cur.n; }
+        if (g.kind === 's' && (cur.sn || 0) > R.psn) { m.save(); m.clip(g.clip, 'evenodd'); strokeRange(m, g.scrib.pts, g.scrib.pr, Math.max(0, R.psn - 1), cur.sn, SCRIB_W * R.lwMul); m.restore(); R.psn = cur.sn; }
+        occ = cur.occ;
+      } else if (cur.type === 'color') {
+        if (cur.n > R.pn) { m.save(); m.clip(cur.it.p2d); strokeRange(m, cur.h.pts, cur.h.pr, Math.max(0, R.pn - 1), cur.n, COLOR_W); m.restore(); R.pn = cur.n; }
+        occ = cur.it.occ; hex = cur.it.color; alpha = 0.9 * cur.it.op;
+      } else {
+        const g = cur.it.g;
+        if (cur.n > R.pn) { strokeRange(m, g.pts, g.pr, Math.max(0, R.pn - 1), cur.n, LW * 1.25 * R.lwMul); R.pn = cur.n; }
+        occ = cur.it.occ; hex = cur.it.color;
+      }
+      const c = clearTmp(); c.drawImage(m.canvas, 0, 0);
+      finishTex(c, occ, hex, target, alpha);
+    };
+    function finishTex(c, occ, hex, target, alpha) {
+      if (occ && occ.length) { toWorld(c); c.globalCompositeOperation = 'destination-out'; for (const o of occ) c.fill(o.p2d); }
+      c.setTransform(1, 0, 0, 1, 0, 0);
+      c.globalCompositeOperation = 'source-in'; c.fillStyle = pattern(hex); c.fillRect(0, 0, R.size, R.size);
+      c.globalCompositeOperation = 'source-over';
+      target.setTransform(1, 0, 0, 1, 0, 0); target.globalAlpha = alpha ?? 1;
+      target.drawImage(c.canvas, 0, 0); target.globalAlpha = 1;
+    }
+    R.graphitePass = (target, items, occ) => {
+      const c = clearTmp(); toWorld(c); c.fillStyle = c.strokeStyle = '#000';
+      for (const it of items) {
+        strokeSolid(c, it.g.pts, it.g.pr, it.n, LW * R.lwMul);
+        if (it.g.kind === 's' && it.sn > 0) { c.save(); c.clip(it.g.clip, 'evenodd'); strokeSolid(c, it.g.scrib.pts, it.g.scrib.pr, it.sn, SCRIB_W * R.lwMul); c.restore(); }
+      }
+      finishTex(c, occ, null, target, 0.95);
+    };
+    R.colorPass = (target, it, h, n) => {
+      const c = clearTmp(); toWorld(c); c.fillStyle = c.strokeStyle = '#000';
+      c.save(); c.clip(it.p2d); strokeSolid(c, h.pts, h.pr, n, COLOR_W); c.restore();
+      finishTex(c, it.occ, it.color, target, 0.9 * it.op);
+    };
+    R.tracePass = (target, it, n) => {
+      const c = clearTmp(); toWorld(c); c.fillStyle = c.strokeStyle = '#000';
+      strokeSolid(c, it.g.pts, it.g.pr, n, LW * 1.25 * R.lwMul);
+      finishTex(c, it.occ, it.color, target, 0.95);
+    };
+    const clearL = c => { c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, R.size, R.size); };
+    R.renderGraph = v => {
+      clearL(R.graph);
+      const pe = prep(v.dr), groups = new Map();
+      for (const g of pe.lines) {
+        if (!v.done.has(g.ord)) continue;
+        const occ = pe.occluders(g, v.done), key = occ.map(o => o.ord).join(',');
+        if (!groups.has(key)) groups.set(key, { occ, items: [] });
+        groups.get(key).items.push({ g, n: g.n, sn: g.scrib ? g.scrib.n : 0 });
+      }
+      for (const gr of groups.values()) R.graphitePass(R.graph, gr.items, gr.occ);
+    };
+    R.addGraph = (v, g) => {
+      const pe = prep(v.dr);
+      if (g.closed) { R.renderGraph(v); return; }
+      R.graphitePass(R.graph, [{ g, n: g.n, sn: 0 }], pe.occluders(g, v.done));
+    };
+    R.renderColor = v => {
+      clearL(R.color); clearL(R.over);
+      const pe = prep(v.dr);
+      for (const it of pe.colorItems()) if (v.colorDone.has(it.id)) { const h = pe.hatchFor(it); R.colorPass(R.color, it, h, h.n); }
+      for (const it of pe.traceItems()) if (v.overDone.has(it.id)) R.tracePass(R.over, it, it.g.n);
+    };
+    R.renderHL = v => {
+      clearL(R.hl);
+      if (!v.hlShapes || !v.hlShapes.length) return;
+      const pe = prep(v.dr);
+      for (const g of v.hlShapes) {
+        const c = clearTmp(); toWorld(c); c.strokeStyle = c.fillStyle = '#ffd43b';
+        strokeSolid(c, g.pts, g.pr.map(() => 1), g.n, HL_W * (R.lwMul > 1 ? 1.2 : 1));
+        const occ = pe.occluders(g, v.done);
+        if (occ.length) { c.globalCompositeOperation = 'destination-out'; for (const o of occ) c.fill(o.p2d); c.globalCompositeOperation = 'source-over'; }
+        R.hl.setTransform(1, 0, 0, 1, 0, 0); R.hl.drawImage(c.canvas, 0, 0);
+      }
+    };
+    R.rebuild = v => { R.renderGraph(v); R.renderColor(v); R.renderHL(v); };
+    R.compose = (D, v) => {
+      D.setTransform(1, 0, 0, 1, 0, 0); D.globalAlpha = 1; D.globalCompositeOperation = 'source-over';
+      D.clearRect(0, 0, D.canvas.width, D.canvas.height);
+      if (v.hlA > 0 && v.hlShapes && v.hlShapes.length) { D.globalAlpha = 0.5 * v.hlA; D.drawImage(R.hl.canvas, 0, 0); D.globalAlpha = 1; }
+      D.drawImage(R.color.canvas, 0, 0);
+      const cur = v.cur;
+      if (cur && cur.type === 'color') R.partialPass(D, cur);
+      D.drawImage(R.graph.canvas, 0, 0);
+      if (cur && cur.type === 'graph') R.partialPass(D, cur);
+      D.drawImage(R.over.canvas, 0, 0);
+      if (cur && cur.type === 'over') R.partialPass(D, cur);
+    };
+    return R;
+  }
+
+  return { prep, vis, cost, idxAt, makeRenderer, paperDataURL };
+})();
+
+</script>
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const IN_VIEWER = !!(window.claude && typeof window.claude.use === 'function');
+const APP_VERSION = 3;
+const DPR = () => Math.min(2, window.devicePixelRatio || 1);
+try { document.documentElement.style.setProperty('--paperTex', `url(${PencilEngine.paperDataURL()})`); } catch (e) {}
+
+/* ---------- kurşun kalem görüntüleri (önbellekli) ---------- */
+const TR = PencilEngine.makeRenderer(), TD = document.createElement('canvas').getContext('2d');
+const snapCache = {};
+function snap(dr, k, px, hl) {
+  const key = dr.id + '|' + k + '|' + px + '|' + (hl ? 1 : 0);
+  if (snapCache[key]) return snapCache[key];
+  const pe = PencilEngine.prep(dr), fin = k >= dr.steps.length;
+  TR.resize(px); TD.canvas.width = TD.canvas.height = TR.size;
+  const v = {
+    dr, done: new Set(pe.lines.filter(g => fin || g.si <= k).map(g => g.ord)),
+    colorDone: new Set(fin ? pe.colorItems().map(i => i.id) : []), overDone: new Set(fin ? pe.traceItems().map(i => i.id) : []),
+    hlShapes: (!fin && hl) ? pe.lines.filter(g => g.si === k) : [], hlA: 1, cur: null
+  };
+  TR.rebuild(v); TR.compose(TD, v);
+  return (snapCache[key] = TD.canvas.toDataURL('image/png'));
+}
+const finalImg = (dr, css) => snap(dr, dr.steps.length, Math.round((css || 170) * DPR()), false);
+
+/* ---------- simgeler ---------- */
+const IC = {
+  home: '<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h5v-6h3v6h5V10"/>',
+  replay: '<path d="M4.5 12a7.5 7.5 0 1 0 2.4-5.5"/><path d="M4.5 4v4.5H9"/>',
+  left: '<path d="M15 5l-7 7 7 7"/>',
+  right: '<path d="M9 5l7 7-7 7"/>',
+  speak: '<path d="M4 9.5h3.5L12.5 5v14l-5-4.5H4z"/><path d="M16 9a4.2 4.2 0 0 1 0 6"/><path d="M18.8 6.3a8 8 0 0 1 0 11.4"/>',
+  star: '<path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.8l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/>',
+  play: '<path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/>',
+  pause: '<path d="M8 5.5v13M16 5.5v13" stroke-width="3.4"/>',
+  gear: '<path d="M4 7h9.5M18.5 7H20M4 17h3.5M12.5 17H20"/><circle cx="16" cy="7" r="2.5"/><circle cx="10" cy="17" r="2.5"/>',
+  full: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
+  eye: '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>',
+  pencil: '<path d="M4 20l1.2-4.8L15.5 4.9a2.1 2.1 0 0 1 3 0l.6.6a2.1 2.1 0 0 1 0 3L8.8 18.8z"/><path d="M13.5 7l3.5 3.5"/>',
+  brush: '<path d="M14.5 4.5l5 5-7.5 7.5-5-5z"/><path d="M7 12l-2.5 2.5c-1.5 1.5-1 4-1 4s2.5.5 4-1L10 15"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>'
+};
+const icon = (n, s = 26) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
+
+/* ---------- ayarlar (yalnızca bu tarayıcıda) ---------- */
+const KEY = 'minikRessam.v2';
+let saved = { done: {}, speed: 1, voice: true, auto: 0, sound: true };
+try { saved = Object.assign(saved, JSON.parse(localStorage.getItem(KEY)) || {}); } catch (e) {}
+try { const old = JSON.parse(localStorage.getItem('minikRessam.v1')); if (old && old.done && !Object.keys(saved.done).length) saved.done = old.done; } catch (e) {}
+const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {} };
+const SPEEDS = [0.065, 0.1, 0.16];          // birim / ms
+const SPEED_NAMES = ['Yavaş', 'Normal', 'Hızlı'];
+const AUTOS = [0, 15, 30];
+
+/* ---------- efekt sesleri ---------- */
+let AC = null;
+function ac() {
+  if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { AC = null; } }
+  if (AC && AC.state === 'suspended') AC.resume().catch(() => {});
+  return AC;
+}
+function tone(f, d = 0.12, type = 'sine', v = 0.12, delay = 0) {
+  if (!saved.sound) return;
+  const a = ac(); if (!a) return;
+  try {
+    const t = a.currentTime + delay, o = a.createOscillator(), g = a.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + d + 0.03);
+  } catch (e) {}
+}
+const sfx = {
+  tap: () => tone(560, 0.07, 'triangle', 0.07),
+  next: () => { tone(523, 0.12, 'triangle', 0.1); tone(784, 0.16, 'triangle', 0.1, 0.09); },
+  back: () => tone(392, 0.1, 'triangle', 0.08),
+  turn: () => { tone(660, 0.12, 'sine', 0.09); tone(880, 0.18, 'sine', 0.08, 0.1); },
+  win: () => [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, 0.28, 'triangle', 0.11, i * 0.1))
+};
+
+/* ---------- sesli anlatım ---------- */
+const capP = n => IN_VIEWER ? Promise.resolve().then(() => window.claude.use(n)).catch(() => null) : Promise.resolve(null);
+let TTS = null;
+/* Android uygulamasında tabletin kendi ses motoru (MainActivity köprüsü) */
+const APP = (window.AndroidApp && typeof window.AndroidApp.speak === 'function') ? window.AndroidApp : null;
+const WEB_SPEECH = !APP && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
+const trVoice = () => { try { return speechSynthesis.getVoices().find(v => /^tr/i.test(v.lang)); } catch (e) { return null; } };
+const canSpeak = () => !!(APP || TTS || WEB_SPEECH);
+function stopSpeak() { try { APP && APP.stop(); } catch (e) {} try { WEB_SPEECH && speechSynthesis.cancel(); } catch (e) {} try { TTS && TTS.stop(); } catch (e) {} }
+function webSpeak(text) {
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text); u.lang = 'tr-TR'; u.rate = 0.9;
+    const v = trVoice(); if (v) u.voice = v;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+function speak(text) {
+  if (APP) { try { APP.speak(String(text), 'tr-TR'); } catch (e) {} return; }
+  if (WEB_SPEECH && trVoice()) { webSpeak(text); return; }
+  if (TTS) { TTS.speak(text, { language: 'tr', rate: 0.92 }).catch(err => { if (err && err.code === 'not_granted') { TTS = null; renderSpeakBtn(); } else if (WEB_SPEECH) webSpeak(text); }); return; }
+  if (WEB_SPEECH) webSpeak(text);
+}
+const narrate = text => { if (saved.voice) speak(text); };
+capP('tts').then(t => { TTS = t; renderSpeakBtn(); });
+
+/* ---------- bildirim ve pencere ---------- */
+let toastT;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2400); }
+function openModal(html, actions) {
+  const sh = $('#sheet'); sh.innerHTML = html;
+  const row = document.createElement('div'); row.className = 'acts';
+  actions.forEach(a => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'btn ' + (a.cls || ''); b.innerHTML = a.label;
+    b.addEventListener('click', () => { sfx.tap(); closeModal(); a.fn && a.fn(); });
+    row.appendChild(b);
+  });
+  sh.appendChild(row);
+  $('#modal').classList.add('on');
+}
+function closeModal() { $('#modal').classList.remove('on'); }
+
+/* ---------- ekranlar ---------- */
+function show(id) { document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === id)); if (id === 'play') requestAnimationFrame(fitStage); }
+
+/* ---------- ana sayfa ---------- */
+const LOGO_COLORS = ['#ff6b57', '#ffc93c', '#63e6be', '#4dabf7', '#b197fc', '#ff8fab'];
+(function buildLogo() {
+  let h = '', i = 0;
+  for (const ch of 'Minik Ressam') {
+    if (ch === ' ') { h += '<span class="gap" aria-hidden="true"></span>'; continue; }
+    h += `<span aria-hidden="true" style="--c:${LOGO_COLORS[i % 6]};--r:${[-5, 4, -3, 5, -2, 3][i % 6]}deg;--d:${i * 0.05}s">${ch}</span>`;
+    i++;
+  }
+  $('#logo').innerHTML = h;
+})();
+let curCat = 'hepsi';
+function renderChips() {
+  $('#chips').innerHTML = CATS.map(c => `<button type="button" class="chip" data-cat="${c.id}" aria-pressed="${c.id === curCat}">${c.name}</button>`).join('');
+}
+const finalCache = {};
+const finalSVG = d => finalCache[d.id] || (finalCache[d.id] = drawingSVG(d, 0, 'final'));
+const ROTS = [-2, 1.5, -1, 2, -1.5, 1];
+function renderGrid() {
+  const list = DRAWINGS.filter(d => curCat === 'hepsi' || d.cat === curCat);
+  $('#grid').innerHTML = list.map((d, i) => {
+    const n = d.steps.length, lvl = n <= 4 ? 1 : n === 5 ? 2 : 3;
+    const done = saved.done[d.id] || 0;
+    const key = d.id + '|' + n + '|' + Math.round(170 * DPR()) + '|0';
+    const inner = snapCache[key] ? `<img src="${snapCache[key]}" alt="">` : finalSVG(d);
+    return `<button type="button" class="card" data-id="${d.id}" aria-label="${d.name}, ${n} adım">
+      <span class="thumb" style="--bg:${d.bg}"><span class="sheetimg${snapCache[key] ? ' done' : ''}" style="--rot:${ROTS[i % 6]}deg" data-id="${d.id}">${inner}</span></span>
+      <span class="cap"><span class="nm">${d.name}</span><span class="pill lvl-${lvl}">${n} adım</span></span>
+      ${done ? `<span class="badge"><svg viewBox="0 0 24 24" stroke="#2d3047" stroke-width="1.8" stroke-linejoin="round">${IC.star}</svg>${done}</span>` : ''}
+    </button>`;
+  }).join('');
+  fillThumbs();
+}
+let fillT = 0;
+function fillThumbs() {
+  const my = ++fillT;
+  const els = [...document.querySelectorAll('.sheetimg[data-id]:not(.done)')];
+  let i = 0;
+  (function next() {
+    if (my !== fillT || i >= els.length) return;
+    const el = els[i++], d = DRAWINGS.find(x => x.id === el.dataset.id);
+    try { el.innerHTML = `<img src="${finalImg(d)}" alt="">`; el.classList.add('done'); } catch (e) {}
+    setTimeout(next, 16);
+  })();
+}
+$('#chips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; sfx.tap(); curCat = b.dataset.cat; renderChips(); renderGrid(); });
+$('#grid').addEventListener('click', e => { const b = e.target.closest('.card'); if (!b) return; sfx.next(); openLesson(DRAWINGS.find(d => d.id === b.dataset.id)); });
+
+/* ---------- oynatıcı ---------- */
+const st = { dr: null, step: -1, phase: 'intro' };
+const FINAL_TEXT = 'Şimdi boya kalemlerinle rengarenk boya! İstersen buradaki renkleri kullanabilirsin.';
+const total = () => st.dr.steps.length + 1;
+const isFinal = () => st.step === st.dr.steps.length;
+const stepText = () => isFinal() ? FINAL_TEXT : st.dr.steps[st.step].t;
+
+$('#homeBtn').innerHTML = icon('home', 28);
+$('#fullBtn').innerHTML = icon('full', 26);
+if (APP) { $('#fullBtn').hidden = true; $('.hint').textContent = 'Büyüklere not: Çizim ekranında sağ üstteki ayar düğmesinden çizim hızını, sesli anlatımı ve kendiliğinden devam etmeyi ayarlayabilirsiniz. Sürüm ' + APP_VERSION + '.'; }
+$('#setBtn').innerHTML = icon('gear', 28);
+$('#replayBtn').innerHTML = icon('replay', 22) + 'Tekrar izle';
+$('#prevBtn').innerHTML = icon('left', 22) + 'Önceki';
+function renderSpeakBtn() { $('#speakBtn').innerHTML = icon('speak', 22) + 'Dinle'; $('#speakBtn').hidden = !canSpeak(); }
+renderSpeakBtn();
+
+const stagewrap = $('#stagewrap'), stage = $('#stage');
+const disp = $('#disp'), D = disp.getContext('2d');
+const R = PencilEngine.makeRenderer();
+const view = { dr: null, done: new Set(), colorDone: new Set(), overDone: new Set(), hlShapes: [], hlA: 0, cur: null };
+const handEl = $('#hand'), hin = $('#hin');
+hin.innerHTML = HAND.svg;
+const hsh = $('#hsh');
+hsh.innerHTML = HAND.shadow;
+let stageCss = 300, handPos = { x: 250, y: 255 };
+const REST = { x: 250, y: 255 };
+function sizeHand() {
+  const W = stageCss * 0.44, H = W * HAND.vb.h / HAND.vb.w;
+  for (const el of [hin, hsh]) {
+    el.style.width = W + 'px'; el.style.height = H + 'px';
+    el.style.left = (HAND.vb.x / HAND.vb.w * W) + 'px'; el.style.top = (HAND.vb.y / HAND.vb.h * H) + 'px';
+  }
+}
+function placeHand(x, y, lifted) {
+  handPos = { x, y };
+  const s = stageCss;
+  handEl.style.transform = `translate(${(s * 0.05 + x * s * 0.9 / 200).toFixed(1)}px,${(s * 0.05 + y * s * 0.9 / 200).toFixed(1)}px)`;
+  handEl.classList.toggle('up', !!lifted);
+}
+function setPencilColor(c) { handEl.style.setProperty('--pc', c || '#f5c02e'); handEl.style.setProperty('--tip', c || '#3a3a40'); }
+const compose = () => { if (disp.width === R.size) R.compose(D, view); };
+function fitStage() {
+  const r = stagewrap.getBoundingClientRect();
+  if (!r.width || !r.height) return;
+  const s = Math.max(180, Math.floor(Math.min(r.width - 36, r.height - 24)));
+  stage.style.width = stage.style.height = s + 'px';
+  stageCss = s;
+  const px = Math.round(s * DPR());
+  const changed = R.resize(px);
+  if (disp.width !== R.size) disp.width = disp.height = R.size;
+  if (changed && view.dr) R.rebuild(view);
+  sizeHand(); placeHand(handPos.x, handPos.y, true);
+  compose();
+}
+if ('ResizeObserver' in window) new ResizeObserver(fitStage).observe(stagewrap);
+window.addEventListener('resize', fitStage);
+
+/* kalem cızırtısı sesi */
+let scr = null;
+function scratchInit() {
+  const a = ac(); if (!a || scr) return;
+  try {
+    const len = a.sampleRate * 2, buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0);
+    let last = 0;
+    for (let i = 0; i < len; i++) { const w = Math.random() * 2 - 1; last = 0.7 * last + 0.3 * w; d[i] = w * 0.6 + last * 0.4; }
+    const src = a.createBufferSource(); src.buffer = buf; src.loop = true;
+    const bp = a.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 3000; bp.Q.value = 0.6;
+    const hp = a.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 900;
+    const g = a.createGain(); g.gain.value = 0;
+    src.connect(bp); bp.connect(hp); hp.connect(g); g.connect(a.destination); src.start();
+    scr = { a, g };
+  } catch (e) { scr = null; }
+}
+function scratch(level) {
+  if (!scr) return;
+  const v = (saved.sound && !paused && level > 0) ? level * (0.05 + Math.random() * 0.035) : 0;
+  try { scr.g.gain.setTargetAtTime(v, scr.a.currentTime, 0.03); } catch (e) {}
+}
+
+let wakeLock = null;
+async function keepAwake() { try { if (navigator.wakeLock && !wakeLock) { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => { wakeLock = null; }); } } catch (e) { wakeLock = null; } }
+function letSleep() { try { wakeLock && wakeLock.release(); } catch (e) {} wakeLock = null; }
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    if (AC && AC.state === 'suspended') AC.resume().catch(() => {});
+    maybeApplyUpdate();
+    if ($('#play').classList.contains('on') && st.step >= 0) keepAwake();
+  } else {
+    if (st.phase === 'playing' && !paused) togglePause();
+    scratch(0); stopSpeak();
+    if (AC && AC.state === 'running') AC.suspend().catch(() => {});
+  }
+});
+
+function openLesson(dr) {
+  cancelPlay();
+  st.dr = dr; st.step = -1; st.phase = 'intro';
+  $('#tname').textContent = dr.name;
+  show('play');
+  view.dr = dr; view.done = new Set(); view.colorDone = new Set(); view.overDone = new Set(); view.hlShapes = []; view.hlA = 0; view.cur = null;
+  R.rebuild(view); compose();
+  setPencilColor(null); placeHand(REST.x, REST.y, true);
+  renderTimeline();
+  const intro = $('#intro');
+  intro.innerHTML = `<div class="pic" style="--bg:${dr.bg}"><span class="sheetimg" style="--rot:-2deg"><img src="${finalImg(dr, 240)}" alt=""></span></div>
+    <h2>Bugün ${dr.name} çiziyoruz!</h2>
+    <p>Kâğıdını ve kalemini hazırla. Ben çizeceğim, sen de aynısını kâğıdına çizeceksin.</p>
+    <button class="btn go" id="startBtn" type="button">${icon('play', 30)}Başla</button>`;
+  intro.hidden = false;
+  $('#startBtn').addEventListener('click', () => { sfx.next(); scratchInit(); keepAwake(); goStep(0); });
+  $('#steplbl').textContent = `${dr.steps.length} adım + boyama`;
+  $('#instr').textContent = 'Hazır mısın? Kâğıt ve kurşun kalem al, sonra Başla’ya dokun.';
+  setPhase('intro');
+  narrate(`Bugün ${dr.name} çiziyoruz! Kâğıdını ve kalemini hazırla.`);
+}
+$('#homeBtn').addEventListener('click', () => { sfx.back(); cancelPlay(); scratch(0); stopSpeak(); letSleep(); renderGrid(); show('home'); maybeApplyUpdate(); });
+
+function renderTimeline() {
+  const dr = st.dr; let h = '';
+  for (let i = 0; i < total(); i++) {
+    const fin = i === total() - 1;
+    const cls = i === st.step ? 'cur' : i < st.step ? 'done' : '';
+    h += `<button type="button" class="tl ${cls}" data-i="${i}" aria-label="${fin ? 'Boyama' : 'Adım ' + (i + 1)}"${i === st.step ? ' aria-current="step"' : ''}>
+      <img src="${snap(dr, i, Math.round(68 * DPR()), true)}" alt=""><i>${fin ? '★' : i + 1}</i></button>`;
+  }
+  $('#timeline').innerHTML = h;
+  const cur = $('#timeline .cur'); if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: 'nearest', inline: 'center' });
+}
+$('#timeline').addEventListener('click', e => { const b = e.target.closest('.tl'); if (!b) return; const i = +b.dataset.i; if (i === st.step) { replay(); return; } i > st.step ? sfx.next() : sfx.back(); keepAwake(); goStep(i); });
+
+function setPhase(ph) {
+  st.phase = ph;
+  const status = $('#status'), main = $('#mainBtn'), pp = $('#ppBtn');
+  const last = st.step >= 0 && isFinal();
+  main.classList.remove('ready');
+  main.innerHTML = '';
+  if (ph === 'intro') {
+    status.hidden = true; pp.hidden = true; main.hidden = true;
+    $('#replayBtn').disabled = true; $('#prevBtn').disabled = true;
+    return;
+  }
+  status.hidden = false; main.hidden = false;
+  $('#replayBtn').disabled = false; $('#prevBtn').disabled = st.step === 0;
+  if (ph === 'playing') {
+    status.className = 'status';
+    status.innerHTML = icon('eye', 30) + (last ? 'İzle, nasıl boyanıyor!' : 'İzle! Kalem çiziyor…');
+    main.className = 'btn';
+    main.innerHTML = last ? icon('star', 28) + 'Bitirdim!' : 'Çizdim, devam' + icon('right', 28);
+    pp.hidden = false; renderPP();
+  } else {
+    status.className = 'status turn';
+    status.innerHTML = icon(last ? 'brush' : 'pencil', 30) + (last ? 'Sıra sende! Resmini boya.' : 'Sıra sende! Kâğıdına çiz.');
+    main.className = 'btn ' + (last ? 'sun' : 'go') + ' ready';
+    main.innerHTML = (last ? icon('star', 28) + 'Bitirdim!' : 'Çizdim, devam' + icon('right', 28)) + '<span class="bar" id="autoBar"></span>';
+    pp.hidden = true;
+  }
+}
+$('#mainBtn').addEventListener('click', () => {
+  scratchInit();
+  if (st.phase === 'intro') { sfx.next(); keepAwake(); goStep(0); return; }
+  if (isFinal()) { finish(); return; }
+  sfx.next(); goStep(st.step + 1);
+});
+$('#prevBtn').addEventListener('click', () => { if (st.step <= 0) return; sfx.back(); goStep(st.step - 1); });
+$('#replayBtn').addEventListener('click', () => { sfx.tap(); replay(); });
+$('#speakBtn').addEventListener('click', () => speak(st.step < 0 ? $('#instr').textContent : stepText()));
+$('#ppBtn').addEventListener('click', e => { e.stopPropagation(); togglePause(); });
+stage.addEventListener('click', e => { if (st.phase === 'playing' && !e.target.closest('.intro') && !e.target.closest('.pp')) togglePause(); });
+document.addEventListener('keydown', e => {
+  if (!$('#play').classList.contains('on') || $('#modal').classList.contains('on')) return;
+  if (e.key === 'ArrowRight' || e.key === 'Enter') { e.preventDefault(); $('#mainBtn').click(); }
+  if (e.key === 'ArrowLeft') $('#prevBtn').click();
+  if (e.key === ' ') { e.preventDefault(); if (st.phase === 'playing') togglePause(); else replay(); }
+});
+
+function goStep(i) {
+  st.step = i;
+  $('#intro').hidden = true;
+  $('#steplbl').textContent = isFinal() ? 'Son adım: boyama' : `Adım ${i + 1} / ${st.dr.steps.length}`;
+  $('#instr').textContent = stepText();
+  renderTimeline();
+  play();
+}
+function replay() { if (st.step < 0) return; play(); }
+
+/* ---------- video gibi oynatma ---------- */
+const CANCEL = { cancel: true };
+let playToken = 0, paused = false;
+function cancelPlay() { playToken++; paused = false; }
+function togglePause() { paused = !paused; sfx.tap(); renderPP(); if (paused) { stopSpeak(); scratch(0); } }
+function renderPP() { const pp = $('#ppBtn'); pp.innerHTML = icon(paused ? 'play' : 'pause', 28); pp.setAttribute('aria-label', paused ? 'Devam et' : 'Duraklat'); }
+function tween(dur, fn, token) {
+  return new Promise((res, rej) => {
+    let el = 0, lastTs = null;
+    function f(ts) {
+      if (token !== playToken) { rej(CANCEL); return; }
+      if (lastTs === null) lastTs = ts;
+      const dt = Math.min(64, ts - lastTs); lastTs = ts;
+      if (!paused) el += dt;
+      const p = dur <= 0 ? 1 : Math.min(1, el / dur);
+      fn(p);
+      if (p >= 1) res(); else requestAnimationFrame(f);
+    }
+    requestAnimationFrame(f);
+  });
+}
+const wait = (ms, token) => tween(ms, () => {}, token);
+const ease = p => p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+
+async function play() {
+  cancelPlay();
+  const token = playToken;
+  stopSpeak(); scratch(0);
+  const dr = st.dr, fin = isFinal(), pe = PencilEngine.prep(dr);
+  view.dr = dr; view.cur = null; view.hlShapes = []; view.hlA = 0;
+  view.done = new Set(pe.lines.filter(g => fin || g.si < st.step).map(g => g.ord));
+  view.colorDone = new Set(); view.overDone = new Set();
+  R.rebuild(view); compose();
+  setPencilColor(null); placeHand(REST.x, REST.y, true);
+  setPhase('playing');
+  narrate(stepText());
+  try {
+    if (REDUCED) { instantStep(pe); await wait(200, token); }
+    else if (fin) await colorStep(token, pe);
+    else await drawStep(token, pe);
+    scratch(0);
+    yourTurn(token);
+  } catch (e) { if (e !== CANCEL) throw e; }
+}
+function instantStep(pe) {
+  if (isFinal()) { pe.colorItems().forEach(i => view.colorDone.add(i.id)); pe.traceItems().forEach(i => view.overDone.add(i.id)); }
+  else { const news = pe.lines.filter(g => g.si === st.step); news.forEach(g => view.done.add(g.ord)); view.hlShapes = news; view.hlA = 1; }
+  R.rebuild(view); compose();
+}
+async function travel(to, token) {
+  const from = { x: handPos.x, y: handPos.y }, dist = Math.hypot(to.x - from.x, to.y - from.y);
+  if (dist < 1.5) return;
+  scratch(0);
+  await tween(Math.min(780, 200 + dist * 3.2), p => { const q = ease(p); placeHand(from.x + (to.x - from.x) * q, from.y + (to.y - from.y) * q, true); }, token);
+}
+async function drawStep(token, pe) {
+  const news = pe.lines.filter(g => g.si === st.step).sort((a, b) => a.ord - b.ord);
+  const spd = SPEEDS[saved.speed] || SPEEDS[1];
+  await wait(350, token);
+  for (const g of news) {
+    const occ = pe.occluders(g, view.done);
+    const v = PencilEngine.vis(g.pts, g.n, null, null, occ);
+    const c = PencilEngine.cost(g.pts, g.n, v), T = c[g.n - 1] || 1;
+    await travel({ x: g.pts[0], y: g.pts[1] }, token);
+    await tween(Math.max(420, T / spd), p => {
+      const i = PencilEngine.idxAt(c, p * T);
+      view.cur = { type: 'graph', g, n: i + 1, sn: 0, occ };
+      compose(); placeHand(g.pts[2 * i], g.pts[2 * i + 1], !v[i]); scratch(v[i] ? 1 : 0);
+    }, token);
+    if (g.kind === 's' && g.scrib && g.scrib.n > 1) {
+      const sp = g.scrib.pts, sn = g.scrib.n, sc = PencilEngine.cost(sp, sn, new Uint8Array(sn).fill(1)), ST = sc[sn - 1] || 1;
+      scratch(0);
+      await tween(Math.max(320, ST / (spd * 2.8)), p => {
+        const i = PencilEngine.idxAt(sc, p * ST);
+        view.cur = { type: 'graph', g, n: g.n, sn: i + 1, occ };
+        compose(); placeHand(sp[2 * i], sp[2 * i + 1], false); scratch(0.9);
+      }, token);
+    }
+    view.cur = null; view.done.add(g.ord); R.addGraph(view, g); compose(); scratch(0);
+    await wait(110, token);
+  }
+  await travel(REST, token);
+  view.hlShapes = news; R.renderHL(view);
+  await tween(450, p => { view.hlA = p; compose(); }, token);
+}
+async function colorStep(token, pe) {
+  const fac = [1.5, 1, 0.6][saved.speed] ?? 1;
+  const plans = pe.colorItems().map(it => {
+    const h = pe.hatchFor(it), v = PencilEngine.vis(h.pts, h.n, it.p2d, 'nonzero', it.occ), c = PencilEngine.cost(h.pts, h.n, v, 0.15);
+    return { it, h, v, c, T: c[h.n - 1] || 1 };
+  });
+  const totalT = plans.reduce((a, p) => a + p.T, 0) || 1, budget = 8000 * fac;
+  await wait(400, token);
+  for (const pl of plans) {
+    setPencilColor(pl.it.color);
+    await travel({ x: pl.h.pts[0], y: pl.h.pts[1] }, token);
+    await tween(Math.max(280, budget * pl.T / totalT), p => {
+      const i = PencilEngine.idxAt(pl.c, p * pl.T);
+      view.cur = { type: 'color', it: pl.it, h: pl.h, n: i + 1 };
+      compose(); placeHand(pl.h.pts[2 * i], pl.h.pts[2 * i + 1], false); scratch(pl.v[i] ? 0.7 : 0);
+    }, token);
+    view.cur = null; view.colorDone.add(pl.it.id); R.colorPass(R.color, pl.it, pl.h, pl.h.n); compose(); scratch(0);
+  }
+  const spd = SPEEDS[saved.speed] || SPEEDS[1];
+  for (const tr of pe.traceItems()) {
+    const g = tr.g, v = PencilEngine.vis(g.pts, g.n, null, null, tr.occ), c = PencilEngine.cost(g.pts, g.n, v), T = c[g.n - 1] || 1;
+    setPencilColor(tr.color);
+    await travel({ x: g.pts[0], y: g.pts[1] }, token);
+    await tween(Math.max(240, T / (spd * 2)), p => {
+      const i = PencilEngine.idxAt(c, p * T);
+      view.cur = { type: 'over', it: tr, n: i + 1 };
+      compose(); placeHand(g.pts[2 * i], g.pts[2 * i + 1], !v[i]); scratch(v[i] ? 0.8 : 0);
+    }, token);
+    view.cur = null; view.overDone.add(tr.id); R.tracePass(R.over, tr, g.n); compose(); scratch(0);
+  }
+  await travel(REST, token);
+  setPencilColor(null);
+}
+async function yourTurn(token) {
+  setPhase('turn');
+  sfx.turn();
+  const secs = AUTOS[saved.auto] || 0;
+  if (!secs) return;
+  try {
+    await tween(secs * 1000, p => { const bar = $('#autoBar'); if (bar) bar.style.width = (p * 100) + '%'; }, token);
+    if (isFinal()) return;
+    goStep(st.step + 1);
+  } catch (e) { if (e !== CANCEL) throw e; }
+}
+/* ---------- ayarlar ---------- */
+function segHTML(id, opts, cur) { return `<div class="seg" id="${id}" role="group">${opts.map((o, i) => `<button type="button" data-v="${i}" aria-pressed="${i === cur}">${o}</button>`).join('')}</div>`; }
+function openSettings() {
+  const wasPaused = paused; if (st.phase === 'playing' && !paused) { paused = true; renderPP(); }
+  openModal(`<h2>Ayarlar</h2><div class="set">
+    <div><label>Çizim hızı</label>${segHTML('sSpeed', SPEED_NAMES, saved.speed)}</div>
+    ${canSpeak() ? `<div><label>Sesli anlatım (adımları okur)</label>${segHTML('sVoice', ['Açık', 'Kapalı'], saved.voice ? 0 : 1)}</div>` : ''}
+    <div><label>Kendiliğinden sonraki adıma geç</label>${segHTML('sAuto', ['Kapalı', '15 saniye', '30 saniye'], saved.auto)}</div>
+    <div><label>Efekt sesleri</label>${segHTML('sSound', ['Açık', 'Kapalı'], saved.sound ? 0 : 1)}</div>
+  </div>`, [{ label: icon('check', 24) + 'Tamam', cls: 'go', fn: () => { if (!wasPaused && st.phase === 'playing') { paused = false; renderPP(); } } }]);
+  const bind = (id, fn) => { const g = $('#' + id); if (!g) return; g.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; g.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); fn(+b.dataset.v); persist(); sfx.tap(); }); };
+  bind('sSpeed', v => { saved.speed = v; });
+  bind('sVoice', v => { saved.voice = v === 0; if (!saved.voice) stopSpeak(); });
+  bind('sAuto', v => { saved.auto = v; });
+  bind('sSound', v => { saved.sound = v === 0; });
+}
+$('#setBtn').addEventListener('click', () => { sfx.tap(); openSettings(); });
+$('#fullBtn').addEventListener('click', async () => {
+  sfx.tap();
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else await (document.documentElement.requestFullscreen ? document.documentElement.requestFullscreen() : Promise.reject());
+  } catch (e) { toast('Tam ekran burada açılamadı'); }
+});
+
+/* ---------- bitirme ---------- */
+function finish() {
+  const dr = st.dr;
+  cancelPlay(); stopSpeak();
+  saved.done[dr.id] = (saved.done[dr.id] || 0) + 1; persist();
+  sfx.win(); confetti();
+  narrate('Harika iş çıkardın! Resmini bir büyüğüne göster.');
+  const n = Math.min(3, saved.done[dr.id]);
+  const stars = `<div class="stars" aria-label="${saved.done[dr.id]} kez çizildi">${[0, 1, 2].map(i => `<svg viewBox="0 0 24 24" style="opacity:${i < n ? 1 : 0.25}">${IC.star}</svg>`).join('')}</div>`;
+  const others = DRAWINGS.filter(d => d.id !== dr.id && !saved.done[d.id]);
+  const nextDr = others.length ? others[(Math.random() * others.length) | 0] : DRAWINGS[(DRAWINGS.indexOf(dr) + 1) % DRAWINGS.length];
+  openModal(`${stars}<h2>Harika iş çıkardın!</h2><div class="prev" style="background:${dr.bg}"><span class="sheetimg" style="--rot:2deg"><img src="${finalImg(dr, 240)}" alt=""></span></div><p>Kâğıdındaki ${dr.name.toLocaleLowerCase('tr')} resmini bir büyüğüne göster. Sırada ne var?</p>`, [
+    { label: `Sıradaki: ${nextDr.name}` + icon('right', 24), cls: 'go', fn: () => openLesson(nextDr) },
+    { label: 'Resim seç', fn: () => { letSleep(); renderGrid(); show('home'); maybeApplyUpdate(); } },
+    { label: icon('replay', 22) + 'Baştan çiz', fn: () => openLesson(dr) }
+  ]);
+}
+function confetti() {
+  if (REDUCED) return;
+  const c = $('#fx'), x = c.getContext('2d');
+  const W = c.width = innerWidth, H = c.height = innerHeight;
+  const cols = ['#ff6b57', '#ffc93c', '#63e6be', '#4dabf7', '#b197fc', '#ff8fab'];
+  const ps = Array.from({ length: 150 }, () => ({ x: W / 2 + (Math.random() - 0.5) * W * 0.3, y: H * 0.45, vx: (Math.random() - 0.5) * 18, vy: -Math.random() * 18 - 6, r: Math.random() * 6 + 5, a: Math.random() * 6, va: (Math.random() - 0.5) * 0.4, c: cols[(Math.random() * cols.length) | 0], s: Math.random() < 0.5 }));
+  const t0 = performance.now();
+  (function f(ts) {
+    const t = ts - t0; x.clearRect(0, 0, W, H);
+    if (t > 3200) return;
+    ps.forEach(p => {
+      p.vy += 0.45; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.a += p.va;
+      x.save(); x.translate(p.x, p.y); x.rotate(p.a); x.fillStyle = p.c; x.globalAlpha = Math.max(0, 1 - t / 3200);
+      if (p.s) x.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); else { x.beginPath(); x.arc(0, 0, p.r * 0.7, 0, 7); x.fill(); }
+      x.restore();
+    });
+    requestAnimationFrame(f);
+  })(t0);
+}
+
+/* Otomatik güncelleme: uygulama yeni sürümü arka planda indirir; çocuk ana sayfadayken uygulanır */
+function onHomeIdle() { return $('#home').classList.contains('on') && !$('#modal').classList.contains('on'); }
+function maybeApplyUpdate() {
+  try {
+    if (APP && typeof APP.hasUpdate === 'function' && APP.hasUpdate() && onHomeIdle()) {
+      toast('Yeni çizimler geldi!');
+      setTimeout(() => { try { APP.applyUpdate(); } catch (e) {} }, 1200);
+      return true;
+    }
+  } catch (e) {}
+  return false;
+}
+window.appUpdateReady = () => { maybeApplyUpdate(); return 'ok'; };
+
+/* Android geri tuşu: önce açık pencereyi kapatır, çizimdeyse ana sayfaya döner, ana sayfadaysa uygulamadan çıkar */
+window.appBack = function () {
+  if ($('#modal').classList.contains('on')) { closeModal(); return 'ok'; }
+  if ($('#play').classList.contains('on')) { $('#homeBtn').click(); return 'ok'; }
+  return 'exit';
+};
+
+/* ---------- başlat ---------- */
+renderChips(); renderGrid();
+})();
+</script>
+</body>
+</html>
